@@ -75,3 +75,7 @@ Se concede permiso por la presente, de forma gratuita, a cualquier persona que o
 Backups: Utiliza la opción "Respaldar Base de Datos" en el panel de administración regularmente.
 
 Soporte: Para consultas técnicas o personalizaciones, contacta al administrador del sistema.
+
+<img width="1259" height="827" alt="image" src="https://github.com/user-attachments/assets/63bbb7ef-edc1-46ee-81ef-ec4a82591789" />
+
+
