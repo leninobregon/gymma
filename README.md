@@ -1,68 +1,76 @@
-Sistema GYM MA, basado en el análisis de cada uno de los archivos que has proporcionado. Este es el manual maestro de tu software.
+🏋️‍♂️ GYM MA: Sistema de Gestión para Gimnasios
+GYM MA es una solución integral y ligera diseñada para la administración eficiente de centros deportivos. Centraliza el control de socios, planes, inventario y finanzas en una interfaz intuitiva y segura, optimizada para entornos locales.
 
-1. 🗄️ Arquitectura de Datos (El Corazón del Sistema)
-El sistema se apoya en una base de datos relacional robusta definida en gym_ma_db.sql.
+🌟 Características Principales
+🗄️ Arquitectura de Datos Robusta: Base de datos relacional con cifrado BCRYPT para contraseñas y prevención de Inyecciones SQL mediante PDO.
 
-Tabla usuarios: Controla el acceso. Utiliza cifrado BCRYPT para contraseñas. Roles: ADMIN y CAJA.
+💰 Control Financiero Total: Ciclo de caja obligatorio (Apertura -> POS -> Cierre) con soporte multimoneda (COR/USD) y registro de tasa de cambio histórica para reportes precisos.
 
-Tabla socios: Almacena expedientes, contactos de emergencia y condiciones de salud.
+👥 Gestión de Membresías: Seguimiento dinámico de estados (Activo, Vencido, Próximo a vencer) con alertas visuales y expedientes de salud.
 
-Tabla planes: Define la duración (en días) y el precio.
+📦 Control de Inventario: Gestión de suplementos y productos con alertas automáticas de stock bajo (umbral < 5 unidades).
 
-Tabla ventas: El registro histórico. Es vital porque guarda la tasa_cambio_momento, permitiendo reportes financieros precisos aunque el dólar fluctúe.
+📊 Dashboard Administrativo: Gráficas de ingresos (Chart.js), historial de cajas para auditoría y gestión de planes.
 
-Tabla cajas: Gestiona los turnos (Apertura, Monto Esperado, Monto Real, Cierre).
+🖨️ Tickets Térmicos: Generación de recibos de venta optimizados para impresoras de 80mm.
 
-Tabla inventario: Control de suplementos o productos con alertas de stock bajo.
+🛠️ Tecnologías Utilizadas
+Backend: PHP 7.4+ (Programación Orientada a Objetos).
 
-2. 💰 Ciclo de Caja y Ventas (Flujo Operativo)
-El sistema está diseñado para que no existan fugas de dinero mediante un flujo obligatorio:
+Base de Datos: MySQL / MariaDB.
 
-Apertura (apertura_caja.php): El cajero debe iniciar sesión y declarar con cuánto dinero empieza (Córdobas y Dólares). Si no abre caja, el sistema le bloquea el acceso al POS.
+Frontend: HTML5, CSS3 nativo, JavaScript (AJAX para búsquedas en tiempo real).
 
-Punto de Venta (punto_venta.php):
+Librerías: Chart.js para visualización de datos financieros.
 
-Búsqueda Inteligente: Usa buscar_socio.php para encontrar clientes por nombre o cédula mediante AJAX.
+🚀 Instalación Rápida
+Clonar/Copiar el proyecto: Coloca la carpeta del proyecto en la ruta: C:\xampp\htdocs\gym_ma.
 
-Multimoneda: Permite cobrar en COR o USD. Calcula el vuelto automáticamente basado en la tasa configurada.
+Preparar el Servidor: Inicia Apache y MySQL desde el Panel de Control de XAMPP.
 
-Tipos de Venta: Puede vender "Planes" (suscripciones) o "Productos" (inventario).
+Ejecutar el Instalador: Visita http://localhost/gym_ma/instalar.php en tu navegador. El script creará automáticamente la base de datos gym_db y todas sus tablas.
 
-Cierre de Turno (cerrar_caja.php): El sistema suma las ventas a la apertura y le dice al cajero cuánto "Debe Haber". El cajero ingresa el "Monto Real" y el sistema calcula automáticamente el faltante o sobrante.
+[!WARNING]
+SEGURIDAD: Una vez finalizada la instalación, elimina el archivo instalar.php de tu servidor para evitar reinicios accidentales de la base de datos.
 
-3. 👥 Gestión de Socios y Membresías
-Control de Vigencia: El sistema no solo guarda la fecha, sino que calcula dinámicamente si un socio está Activo, Vencido o Próximo a vencer (Badge naranja) comparando la fecha de ingreso + días del plan contra la fecha actual (socios.php).
+🔑 Acceso Inicial
+Usuario: admin
 
-Expediente Detallado: En editar_socio.php se capturan datos críticos como enfermedades y contactos de emergencia, esenciales para la seguridad civil dentro del gimnasio.
+Contraseña: admin123
 
-4. 📊 Administración y Reportes (Solo ADMIN)
-El panel de control (dashboard.php) ofrece una vista ejecutiva:
+📋 Flujo Operativo (Guía de Usuario)
+1. Inicio de Jornada
+El cajero debe realizar la Apertura de Caja declarando el monto inicial. El acceso al Punto de Venta permanece bloqueado hasta que se complete este paso.
 
-Gráficas: Usa Chart.js para mostrar los ingresos de los últimos 7 días.
+2. Ventas y Cobros
+Planes: Busca al socio por nombre o cédula. El sistema calcula automáticamente la nueva fecha de vigencia.
 
-Alertas: Avisa de inmediato si hay productos con menos de 5 unidades en stock.
+Productos: Selecciona artículos del inventario y la cantidad; el stock se descuenta en tiempo real.
 
-Historial de Cajas: Permite auditar cada turno de cada cajero de forma individual (historial_cajas.php).
+Multimoneda: Permite pagos en Córdobas o Dólares, calculando el vuelto exacto según la tasa del BCN configurada.
 
-Respaldo: El archivo respaldar.php genera un volcado completo de la base de datos en formato .sql para descargar, asegurando la información ante fallos del servidor.
+3. Cierre de Turno
+Al finalizar, el cajero ingresa el Monto Real físico. El sistema compara esto con el Monto Esperado (Apertura + Ventas) y registra cualquier faltante o sobrante para auditoría.
 
-5. 🛠️ Herramientas de Configuración e Instalación
-Instalación Automática (instalar.php): Un script que crea la base de datos, las tablas y el usuario administrador inicial (admin / admin123) desde cero.
+📊 Estructura de la Base de Datos
+usuarios: Roles (ADMIN/CAJA) y acceso.
 
-Configuración Global (configuracion.php): Aquí se centraliza el nombre del gimnasio, el logo, la moneda base y, lo más importante, la Tasa de Cambio BCN.
+socios: Datos personales, médicos y contactos de emergencia.
 
-6. 📝 El Ticket de Venta (imprimir_recibo.php)
-Diseñado para impresoras térmicas (80mm):
+ventas: Registro histórico detallado con tasa de cambio fija al momento de la venta.
 
-Muestra el concepto de venta.
+cajas: Control de turnos y flujos de efectivo.
 
-Muestra el total en Córdobas y su equivalente en Dólares.
+inventario: Stock de productos y alertas.
 
-Incluye mensaje de agradecimiento y datos de contacto del gimnasio.
+📄 Licencia
+Este proyecto está bajo la Licencia MIT.
 
-🔍 Diagnóstico Técnico (Observaciones de Gemini)
-Seguridad: El sistema es seguro al usar PDO para prevenir Inyecciones SQL y session_start para proteger las rutas.
+Copyright (c) 2026 GYM MA DB
 
-Escalabilidad: Al estar basado en clases (Socio.php, Inventario.php, etc.), es fácil añadir módulos nuevos (como control de asistencia por huella o QR).
+Se concede permiso por la presente, de forma gratuita, a cualquier persona que obtenga una copia de este software y de los archivos de documentación asociados, para utilizar el software sin restricción, incluyendo sin limitación los derechos a usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar y/o vender copias del Software, sujeto a que se incluya el aviso de copyright anterior en todas las copias o partes sustanciales del mismo.
 
-Portabilidad: Al ser PHP puro con CSS nativo, corre en cualquier servidor local (XAMPP) o hosting económico.
+✉️ Soporte y Respaldo
+Backups: Utiliza la opción "Respaldar Base de Datos" en el panel de administración regularmente.
+
+Soporte: Para consultas técnicas o personalizaciones, contacta al administrador del sistema.
