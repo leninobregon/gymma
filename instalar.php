@@ -3,7 +3,7 @@
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db_name = "gym_db";
+$db_name = "gym_ma_db";
 
 try {
     // 1. Conectar al servidor MySQL
