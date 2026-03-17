@@ -78,4 +78,6 @@ Soporte: Para consultas técnicas o personalizaciones, contacta al administrador
 
 <img width="1259" height="827" alt="image" src="https://github.com/user-attachments/assets/63bbb7ef-edc1-46ee-81ef-ec4a82591789" />
 
+<img width="1264" height="723" alt="image" src="https://github.com/user-attachments/assets/753a70e7-e68d-4779-915e-fb0256161eb4" />
+
 
