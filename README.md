@@ -82,7 +82,7 @@ Soporte: Para consultas técnicas o personalizaciones, contacta al administrador
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Perfecto, Lenin. Te dejo un **ejemplo de sección de instalación en Debian para tu README.md de GitHub**, bien estructurado y listo para copiar/pegar:
+
 
 ```markdown
 # 📖 Guía de Instalación en Debian
@@ -198,11 +198,4 @@ sudo apt upgrade -y
 
 ---
 
-Con esta guía, tu sistema queda listo para funcionar en **Debian** de forma segura y profesional.
-```
 
----
-
-👉 Te recomiendo añadir esta sección al final de tu README, justo después de la descripción del proyecto y sus características.  
-
-¿Quieres que te prepare también una **versión resumida en inglés** para que tu repositorio sea más accesible a usuarios internacionales?
