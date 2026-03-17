@@ -29,7 +29,7 @@ Clonar/Copiar el proyecto: Coloca la carpeta del proyecto en la ruta: C:\xampp\h
 
 Preparar el Servidor: Inicia Apache y MySQL desde el Panel de Control de XAMPP.
 
-Ejecutar el Instalador: Visita http://localhost/gym_ma/instalar.php en tu navegador. El script creará automáticamente la base de datos gym_db y todas sus tablas.
+Ejecutar el Instalador: Visita http://localhost/gym_ma/instalar.php en tu navegador. El script creará automáticamente la base de datos gym_ma_db y todas sus tablas.
 
 [!WARNING]
 SEGURIDAD: Una vez finalizada la instalación, elimina el archivo instalar.php de tu servidor para evitar reinicios accidentales de la base de datos.
