@@ -195,7 +195,104 @@ sudo rm /var/www/html/gym_ma/instalar.php
 ```bash
 sudo apt upgrade -y
 ```
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+📖 Guía de Instalación de GYM MA en XAMPP (Windows)
+1. 🔧 Instalar y preparar XAMPP
+Descarga XAMPP desde apachefriends.org.
+
+Instala con los módulos: Apache, MySQL, phpMyAdmin.
+
+Abre el XAMPP Control Panel y activa Apache y MySQL.
+
+2. 🗄️ Crear la base de datos
+Abre phpMyAdmin en tu navegador:
+
+Código
+http://localhost/phpmyadmin
+Crea la base de datos:
+
+sql
+CREATE DATABASE gym_ma_db;
+Crea un usuario con permisos:
+
+sql
+CREATE USER 'gymuser'@'localhost' IDENTIFIED BY 'tu_password_segura';
+GRANT ALL PRIVILEGES ON gym_ma_db.* TO 'gymuser'@'localhost';
+FLUSH PRIVILEGES;
+3. 📂 Descargar el proyecto
+Ve al directorio de proyectos de XAMPP:
+
+Código
+C:\xampp\htdocs
+Clona el repositorio:
+
+bash
+git clone https://github.com/leninobregon/gymma.git gym_ma
+(Si no tienes Git, descarga el ZIP desde GitHub y descomprímelo en htdocs con el nombre gym_ma)
+
+4. ⚙️ Instalación inicial
+Abre tu navegador y accede a:
+
+Código
+http://localhost/gym_ma/instalar.php
+El instalador creará las tablas automáticamente.
+
+Credenciales iniciales:
+
+Usuario: admin
+
+Contraseña: admin123
+
+⚠️ IMPORTANTE: elimina el archivo instalar.php después de la instalación:
+
+Código
+C:\xampp\htdocs\gym_ma\instalar.php
+5. 🌐 Configurar VirtualHost (httpd-vhosts.conf)
+Abre el archivo:
+
+Código
+C:\xampp\apache\conf\extra\httpd-vhosts.conf
+Agrega esta configuración:
+
+apache
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    DocumentRoot "C:/xampp/htdocs/gym_ma"
+    ServerName gymma.local
+    ServerAlias www.gymma.local
+
+    <Directory "C:/xampp/htdocs/gym_ma">
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog "logs/gymma_error.log"
+    CustomLog "logs/gymma_access.log" combined
+</VirtualHost>
+Edita el archivo hosts de Windows:
+
+Código
+C:\Windows\System32\drivers\etc\hosts
+Agrega:
+
+Código
+127.0.0.1   gymma.local
+Reinicia Apache desde el panel de XAMPP.
+
+Accede al sistema:
+
+Código
+http://gymma.local
+6. 🔒 Seguridad y mantenimiento
+Cambia la contraseña del usuario admin inmediatamente.
+
+Realiza respaldos periódicos desde la opción integrada de “Respaldar Base de Datos”.
+
+Mantén XAMPP actualizado.
+
+Si lo usas en red local, configura firewall y permisos de acceso.
 ---
 
 
