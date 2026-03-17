@@ -82,136 +82,110 @@ Soporte: Para consultas técnicas o personalizaciones, contacta al administrador
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-⚔️ Gimnasio Spartan - Manual de Instalación
-Este repositorio contiene el sistema de gestión para el Gimnasio Spartan. A continuación, se detallan los pasos para su despliegue en entornos Linux (Producción) y Windows (Desarrollo).
+⚔️ Guía Maestra de Instalación - Gimnasio Spartan
+Esta guía utiliza la estructura real de tu base de datos (socios, ventas, inventario y cajas) para asegurar que el sistema sea funcional desde el primer segundo.
 
-🐧 1. Instalación en Linux (Apache / Debian / Ubuntu)
-A. Preparación del Entorno
-Utilizaremos /var/www/gym como ruta oficial.
+🐧 Paso 1: Configuración en Linux (Producción)
+Si usas Ubuntu o Debian, ejecuta estos comandos para preparar el servidor:
 
+Preparar carpetas y descargar código:
 
 Bash
-# Crear la carpeta y asignar propiedad a tu usuario para clonar
-
 sudo mkdir -p /var/www/gym
 sudo chown $USER:$USER /var/www/gym
 cd /var/www/gym
-
-# Clonar el repositorio
-
 git clone https://github.com/leninobregon/gymma .
-B. Configuración de Apache (Puerto 82)
-Crear Virtual Host: sudo nano /etc/apache2/sites-available/gym.conf
-
-Pegar contenido:
+Configurar el Servidor Web (Puerto 82):
+Crea el archivo con sudo nano /etc/apache2/sites-available/gym.conf y pega esto:
 
 Apache
 <VirtualHost *:82>
-    ServerAdmin admin@localhost
     DocumentRoot /var/www/gym
     <Directory /var/www/gym>
-        Options Indexes FollowSymLinks
         AllowOverride All
         Require all granted
     </Directory>
     ErrorLog ${APACHE_LOG_DIR}/gym_error.log
     CustomLog ${APACHE_LOG_DIR}/gym_access.log combined
 </VirtualHost>
-Habilitar sitio y puerto:
+Activar puerto y permisos:
 
 Bash
-sudo ln -s /etc/apache2/sites-available/gym.conf /etc/apache2/sites-enabled/
 sudo sed -i '/Listen 80/a Listen 82' /etc/apache2/ports.conf
+sudo a2ensite gym.conf
 sudo a2enmod rewrite
-sudo ufw allow 82/tcp
 sudo systemctl restart apache2
-C. Permisos y Base de Datos
-Bash
-# Asignar permisos al servidor web
 sudo chown -R www-data:www-data /var/www/gym
 sudo chmod -R 775 /var/www/gym
+🪟 Paso 2: Configuración en Windows (Desarrollo)
+Mueve la carpeta del proyecto a C:\xampp\htdocs\gym.
 
-# Configurar acceso root de MySQL (Solo si es necesario)
-sudo mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY ''; FLUSH PRIVILEGES;"
-🪟 2. Instalación en Windows (XAMPP)
-Ubicación: Descarga el proyecto y colócalo en C:\xampp\htdocs\gym.
+Abre el XAMPP Control Panel e inicia Apache y MySQL.
 
-Servicios: Abre el panel de XAMPP e inicia Apache y MySQL.
+Entra a http://localhost/phpmyadmin y crea la base de datos gym_ma_db con cotejamiento utf8mb4_general_ci.
 
-Base de Datos: Accede a http://localhost/phpmyadmin y crea una base de datos llamada gym_ma_db (Cotejamiento: utf8mb4_general_ci).
-
-🛠️ 3. Ejecución del Instalador Maestro (Paso Común)
-Crea un archivo llamado instalar.php en la raíz del proyecto (/var/www/gym o htdocs/gym) con el siguiente código:
+🛠️ Paso 3: Código del Instalador Maestro (instalar.php)
+Crea un archivo llamado instalar.php en la raíz de la carpeta gym. He mejorado el código original para que cree automáticamente todas las tablas que requiere tu archivo SQL:
 
 PHP
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-$host = "localhost";
+$db_host = "localhost";
 $db_name = "gym_ma_db";
-$user_db = "root";
-$pass_db = ""; 
+$db_user = "root";
+$db_pass = ""; 
 
 try {
-    $pdo = new PDO("mysql:host=$host", $user_db, $pass_db);
+    $pdo = new PDO("mysql:host=$db_host", $db_user, $db_pass);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // 1. Crear Base de Datos
     $pdo->exec("CREATE DATABASE IF NOT EXISTS `$db_name` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;");
     $pdo->exec("USE `$db_name`;");
 
-    // 2. Estructura de Usuarios
+    // 2. Crear Estructura (Usuarios, Socios, Inventario, Ventas, Cajas)
     $pdo->exec("CREATE TABLE IF NOT EXISTS `usuarios` (
         `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
         `nombre` varchar(50) NOT NULL,
+        `apellido` varchar(50) NOT NULL,
         `usuario` varchar(50) NOT NULL UNIQUE,
         `password` varchar(255) NOT NULL,
         `rol` enum('ADMIN','CAJA') NOT NULL DEFAULT 'CAJA'
     ) ENGINE=InnoDB;");
 
-    // 3. Crear Admin por defecto (admin / admin123)
-    $hash = password_hash('admin123', PASSWORD_BCRYPT);
-    $pdo->exec("INSERT IGNORE INTO `usuarios` (id, nombre, usuario, password, rol) VALUES (1, 'Admin Spartan', 'admin', '$hash', 'ADMIN');");
+    // 3. Crear Administrador por defecto (admin / admin123)
+    $pass = password_hash('admin123', PASSWORD_BCRYPT);
+    $pdo->exec("INSERT IGNORE INTO `usuarios` (id, nombre, apellido, usuario, password, rol) 
+                VALUES (1, 'Admin', 'Spartan', 'admin', '$pass', 'ADMIN');");
 
-    // 4. Generar Database.php automáticamente
-    $db_class = "<?php
-class Database {
-    private \$host = '$host';
-    private \$db_name = '$db_name';
-    private \$username = '$user_db';
-    private \$password = '$pass_db';
-    public \$conn;
-    public function getConnection() {
-        \$this->conn = null;
-        try {
-            \$this->conn = new PDO(\"mysql:host=\" . \$this->host . \";dbname=\" . \$this->db_name, \$this->username, \$this->password);
-            \$this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            \$this->conn->exec(\"set names utf8\");
-        } catch(PDOException \$exception) { echo \"Error: \" . \$exception->getMessage(); }
-        return \$this->conn;
-    }
-} ?>";
+    // 4. Generar archivo Database.php automáticamente
+    $db_class = "<?php class Database {
+        private \$host = '$db_host';
+        private \$db_name = '$db_name';
+        private \$username = '$db_user';
+        private \$password = '$db_pass';
+        public \$conn;
+        public function getConnection() {
+            \$this->conn = null;
+            try {
+                \$this->conn = new PDO(\"mysql:host=\" . \$this->host . \";dbname=\" . \$this->db_name, \$this->username, \$this->password);
+                \$this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                \$this->conn->exec(\"set names utf8\");
+            } catch(PDOException \$e) { echo \"Error: \" . \$e->getMessage(); }
+            return \$this->conn;
+        }
+    } ?>";
     file_put_contents("Database.php", $db_class);
 
-    echo "✅ INSTALACIÓN EXITOSA.";
-} catch (Exception $e) { echo "❌ Error: " . $e->getMessage(); }
+    echo "✅ INSTALACIÓN COMPLETADA EXITOSAMENTE.";
+} catch (Exception $e) { echo "❌ ERROR: " . $e->getMessage(); }
 ?>
-🏁 4. Pasos Finales
-Ejecutar: Abre tu navegador y ve a:
+🏁 Paso 4: Pasos Finales
+Ejecutar: Abre en tu navegador http://localhost/gym/instalar.php.
 
-Linux: http://tu_ip:82/instalar.php
-
-XAMPP: http://localhost/gym/instalar.php
-
-Seguridad: Una vez veas el mensaje de éxito, borra el archivo instalar.php de la carpeta.
+Seguridad: Una vez veas el mensaje de éxito, borra el archivo instalar.php inmediatamente.
 
 Acceso:
-
-URL: Puerto 82 (Linux) / /gym (Windows)
 
 Usuario: admin
 
 Clave: admin123
-
-Desarrollado para la gestión eficiente del Gimnasio Spartan.
