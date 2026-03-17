@@ -92,6 +92,7 @@ Utilizaremos /var/www/gym como ruta oficial.
 
 Bash
 # Crear la carpeta y asignar propiedad a tu usuario para clonar
+
 sudo mkdir -p /var/www/gym
 sudo chown $USER:$USER /var/www/gym
 cd /var/www/gym
