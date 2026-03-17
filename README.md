@@ -80,7 +80,7 @@ Soporte: Para consultas técnicas o personalizaciones, contacta al administrador
 
 <img width="1264" height="723" alt="image" src="https://github.com/user-attachments/assets/753a70e7-e68d-4779-915e-fb0256161eb4" />
 
-
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 📄 Guía de Despliegue: Gimnasio Spartan en Apache
 1. Preparación del Entorno (Directorio y Git)
@@ -210,3 +210,118 @@ Una vez que veas el mensaje de éxito en http://tu_ip:82/instalar.php:
 Bash
 # Borrar el instalador para evitar ataques
 sudo rm /var/www/gym/instalar.php
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Gimnasio Spartan en XAMPP (Windows) sin errores, seguiremos un proceso similar al de Linux pero adaptado a las rutas y herramientas de Windows.
+
+Aquí tienes la guía definitiva paso a paso para dejarlo funcionando al 100%:
+
+1. Ubicación del Proyecto
+En Windows, XAMPP utiliza la carpeta htdocs.
+
+Abre tu explorador de archivos y ve a C:\xampp\htdocs.
+
+Crea una carpeta llamada gym.
+
+Copia todos los archivos de tu proyecto dentro de C:\xampp\htdocs\gym.
+
+2. Configuración de Base de Datos (MySQL)
+XAMPP, por defecto, trae el usuario root sin contraseña, lo cual coincide con la configuración de tu archivo Database.php.
+
+Abre el XAMPP Control Panel.
+
+Inicia los módulos Apache y MySQL.
+
+Haz clic en el botón Admin de MySQL (esto abrirá phpMyAdmin).
+
+Crea una base de datos nueva llamada gym_ma_db con el cotejamiento utf8mb4_general_ci.
+
+3. El Script de Instalación Maestro para XAMPP
+Crea un archivo llamado instalar.php dentro de C:\xampp\htdocs\gym\ y pega este código. Está diseñado para detectar que estás en Windows y configurar todo automáticamente:
+
+PHP
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Configuración específica para XAMPP
+$host = "localhost";
+$db_name = "gym_ma_db";
+$user_db = "root";
+$pass_db = ""; 
+
+try {
+    $pdo = new PDO("mysql:host=$host", $user_db, $pass_db);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // 1. Crear Base de Datos
+    $pdo->exec("CREATE DATABASE IF NOT EXISTS `$db_name` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;");
+    $pdo->exec("USE `$db_name`;");
+    echo "✅ Base de datos '$db_name' lista.<br>";
+
+    // 2. Crear Tabla de Usuarios
+    $pdo->exec("CREATE TABLE IF NOT EXISTS `usuarios` (
+        `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        `nombre` varchar(50) NOT NULL,
+        `usuario` varchar(50) NOT NULL UNIQUE,
+        `password` varchar(255) NOT NULL,
+        `rol` enum('ADMIN','CAJA') NOT NULL DEFAULT 'CAJA'
+    ) ENGINE=InnoDB;");
+
+    // 3. Crear Usuario Administrador (admin / admin123)
+    $hash = password_hash('admin123', PASSWORD_BCRYPT);
+    $pdo->exec("INSERT IGNORE INTO `usuarios` (id, nombre, usuario, password, rol) 
+                VALUES (1, 'Administrador XAMPP', 'admin', '$hash', 'ADMIN');");
+    echo "✅ Usuario 'admin' creado con clave 'admin123'.<br>";
+
+    // 4. Escribir archivo Database.php automáticamente
+    $db_class_content = "<?php
+class Database {
+    private \$host = '$host';
+    private \$db_name = '$db_name';
+    private \$username = '$user_db';
+    private \$password = '$pass_db';
+    public \$conn;
+
+    public function getConnection() {
+        \$this->conn = null;
+        try {
+            \$this->conn = new PDO(\"mysql:host=\" . \$this->host . \";dbname=\" . \$this->db_name, \$this->username, \$this->password);
+            \$this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            \$this->conn->exec(\"set names utf8\");
+        } catch(PDOException \$exception) {
+            echo \"Error de conexión: \" . \$exception->getMessage();
+        }
+        return \$this->conn;
+    }
+} ?>";
+    
+    file_put_contents("Database.php", $db_class_content);
+    echo "✅ Archivo 'Database.php' configurado para XAMPP.<br>";
+
+    echo "<br><strong style='color:green;'>¡SISTEMA LISTO!</strong><br>";
+    echo "<a href='views/login.php'>Ir al Login</a>";
+
+} catch (PDOException $e) {
+    echo "❌ Error: " . $e->getMessage();
+}
+?>
+4. Ejecución
+Abre tu navegador.
+
+Ingresa a la dirección: http://localhost/gym/instalar.php.
+
+Una vez que termine, borra el archivo instalar.php de tu carpeta htdocs/gym.
+
+Diferencias clave con Linux:
+Permisos: En Windows/XAMPP no necesitas ejecutar chown o chmod; el servidor tiene acceso total a los archivos por defecto.
+
+Virtual Hosts: No es obligatorio crear un archivo .conf en sites-available. Puedes acceder simplemente usando localhost/gym/.
+
+Puerto: XAMPP usa el puerto 80 por defecto. No necesitas abrir puertos en el firewall a menos que quieras que alguien fuera de tu red local entre a tu PC.
+
+Resumen de Acceso:
+URL: http://localhost/gym/
+
+Login: admin
+
+Clave: admin123
