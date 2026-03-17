@@ -1,0 +1,95 @@
+======================================================================
+       DOCUMENTACIÓN INTEGRAL DEL SOFTWARE: GYM MA DB (2026)
+======================================================================
+
+Este documento contiene la Guía de Instalación, Arquitectura de Software,
+Seguridad, Diccionario de Base de Datos y Lógica de Negocio.
+
+----------------------------------------------------------------------
+1. GUÍA DE INSTALACIÓN (PUESTA EN MARCHA)
+----------------------------------------------------------------------
+Para instalar el sistema en un entorno local (PC):
+
+1. REQUISITOS: Instalar XAMPP (PHP 8.0+ y MySQL).
+2. UBICACIÓN: Copiar la carpeta del proyecto en: C:\xampp\htdocs\gym_ma\
+3. BASE DE DATOS: 
+   - Abrir http://localhost/phpmyadmin/
+   - Crear base de datos llamada: gym_db
+   - Importar el archivo 'gym_db.sql' ubicado en /config/.
+4. CONEXIÓN: Configurar 'config/Database.php' con:
+   - $host = "localhost"; $db_name = "gym_db"; $username = "root"; $password = "";
+5. ACCESO: Abrir en el navegador: http://localhost/gym_ma/
+
+----------------------------------------------------------------------
+2. ARQUITECTURA DEL SOFTWARE (ESTRUCTURA MVC)
+----------------------------------------------------------------------
+El sistema utiliza un patrón Modelo-Vista-Controlador simplificado:
+
+/config/      -> Conexión PDO y Parámetros Globales (Tasa de Cambio).
+/classes/     -> MODELOS: Lógica de SQL (Usuario.php, Socio.php, Caja.php).
+/controllers/ -> CONTROLADORES: Intermediarios que procesan formularios.
+/views/       -> VISTAS: Interfaz HTML/CSS para el usuario y admin.
+/public/      -> RECURSOS: Estilos CSS (Oscuro/Amarillo), JS e Imágenes.
+
+----------------------------------------------------------------------
+3. SEGURIDAD Y ACCESO
+----------------------------------------------------------------------
+* LOGIN: Valida el alias del usuario y utiliza 'password_verify' para 
+  comparar el Hash de la base de datos.
+* ENCRIPTACIÓN: Las contraseñas se guardan usando 'password_hash' con 
+  el algoritmo BCRYPT (No son legibles en la BD).
+* SESIONES: Cada página valida '$_SESSION['rol']'. Si no hay sesión 
+  activa, el sistema redirige automáticamente al Login.
+* PROTECCIÓN: El Administrador activo no puede eliminarse a sí mismo.
+
+----------------------------------------------------------------------
+4. DICCIONARIO DE LA BASE DE DATOS (TABLAS CLAVE)
+----------------------------------------------------------------------
+
+TABLA: usuarios (Personal del Gimnasio)
+- id (PK), nombre, apellido, usuario (Unique), cedula, rol (ADMIN/CAJA), password.
+
+TABLA: socios (Clientes)
+- id (PK), nombre, apellido, cedula (Unique), telefono, fecha_registro, estado.
+
+TABLA: membresias (Planes)
+- id (PK), nombre_plan, precio_cor, precio_usd, duracion_dias.
+
+TABLA: caja_sesiones (Control de Dinero)
+- id (PK), usuario_id, fecha_apertura, monto_inicial, monto_final_real, estado.
+
+TABLA: pagos_membresias (Ingresos)
+- id (PK), socio_id, plan_id, monto_pagado, tasa_aplicada, vence_el.
+
+----------------------------------------------------------------------
+5. LÓGICA DE NEGOCIO Y OPERACIÓN
+----------------------------------------------------------------------
+
+A. TASA DE CAMBIO:
+   Se muestra resaltada en color AMARILLO (#f1c40f) en el header.
+   Fórmula: Monto_C$ = Monto_USD * Tasa_del_Día.
+
+B. SEMÁFORO DE VENCIMIENTOS:
+   - ROJO: Socio con 'vence_el' menor a la fecha actual (Acceso Denegado).
+   - VERDE: Socio con membresía vigente.
+
+C. CIERRE DE CAJA (ARQUEO):
+   El sistema suma todos los 'pagos_membresias' y 'ventas_productos' 
+   dentro del rango de tiempo de la 'caja_sesion' activa para dar 
+   el "Monto Esperado".
+
+D. EDICIÓN DE PERFILES:
+   Al editar un usuario o socio, si el campo "Contraseña" se deja 
+   vacío, el software conserva la contraseña anterior automáticamente.
+
+----------------------------------------------------------------------
+6. MANTENIMIENTO Y SOPORTE
+----------------------------------------------------------------------
+* BACKUPS: Se recomienda exportar la base de datos semanalmente desde 
+  PHPMyAdmin.
+* LOGS: El sistema registra qué usuario realiza cada cobro para 
+  auditorías internas.
+
+======================================================================
+ESTADO DEL DOCUMENTO: FINALIZADO | FECHA: 2026 | GYM MA DB
+======================================================================

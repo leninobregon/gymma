@@ -1,0 +1,67 @@
+============================================================
+       ARQUITECTURA DEL SOFTWARE - GYM MA DB
+============================================================
+
+El sistema está organizado en 4 capas principales para 
+garantizar orden, seguridad y escalabilidad.
+
+------------------------------------------------------------
+1. CAPA DE CONFIGURACIÓN (/config/)
+------------------------------------------------------------
+Es el "corazón" de la conexión.
+* Database.php: Contiene la clase PDO que conecta PHP con MySQL.
+* AppConfig.php: Maneja variables globales como la "Tasa de Cambio".
+* gym_db.sql: El archivo de respaldo para crear las tablas.
+
+------------------------------------------------------------
+2. CAPA DE MODELOS O CLASES (/classes/)
+------------------------------------------------------------
+Aquí está la lógica de negocio y las consultas SQL.
+* Usuario.php: Contiene las funciones CRUD:
+  - login(): Valida credenciales con password_verify.
+  - registrar(): Inserta usuarios con password_hash.
+  - actualizar(): Modifica datos (con o sin clave nueva).
+  - eliminar(): Borra registros por ID.
+  - listarUsuarios(): Consulta general para la tabla.
+
+------------------------------------------------------------
+3. CAPA DE CONTROLADORES (/controllers/)
+------------------------------------------------------------
+Es el "intermediario". Recibe las órdenes de la vista y 
+llama al modelo.
+* UsuarioController.php: 
+  - Recibe los datos por POST (formularios) o GET (enlaces).
+  - Ejecuta la acción en la clase Usuario.
+  - Redirige al usuario con un mensaje de éxito o error (?res=...).
+
+------------------------------------------------------------
+4. CAPA DE VISTAS (/views/)
+------------------------------------------------------------
+Es lo que el usuario ve y donde interactúa.
+* /admin/gestion_usuarios.php: El panel principal de control.
+* /admin/editar_usuario.php: Formulario de edición.
+* dashboard.php: Panel principal con el resumen del gimnasio.
+* login.php: Puerta de entrada al sistema.
+
+------------------------------------------------------------
+5. RECURSOS PÚBLICOS (/public/)
+------------------------------------------------------------
+Archivos que no cambian y dan el aspecto visual.
+* /css/estilos.css: Define los colores (Oscuros, Amarillo Tasa).
+* /img/: Logotipos e iconos del gimnasio.
+* /js/: Scripts para alertas y confirmaciones de borrado.
+
+------------------------------------------------------------
+FLUJO DE UNA ACCIÓN (Ejemplo: Eliminar Usuario)
+------------------------------------------------------------
+1. VISTA: El admin da clic en "Borrar" enviando el ID por URL.
+2. CONTROLADOR: Captura el ID y valida que el admin no se 
+   esté borrando a sí mismo.
+3. MODELO: Ejecuta la sentencia SQL "DELETE" en la base de datos.
+4. CONTROLADOR: Si sale bien, devuelve al usuario a la tabla
+   con el mensaje "?res=eliminado".
+5. VISTA: Muestra la alerta verde de éxito.
+
+============================================================
+SOPORTE TÉCNICO: GYM MA DB - 2026
+============================================================
