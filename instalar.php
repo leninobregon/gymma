@@ -10,8 +10,8 @@ ini_set('display_errors', 1);
 // --- 1. CONFIGURACIÓN DE ACCESO ---
 $host       = "localhost";
 $db_name    = "gym_ma_db"; //
-$admin_user = "admin";     // Usuario para entrar al sistema
-$admin_pass = "admin123";  // Contraseña para entrar al sistema
+$admin_user = "root";     // Usuario para entrar al sistema root o el que tengas hablitado
+$admin_pass = "pass";  // Contraseña para entrar al sistema 
 
 // Credenciales para el motor de base de datos
 $user_db = "root"; 
