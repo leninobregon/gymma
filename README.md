@@ -1,6 +1,7 @@
 🏋️‍♂️ GYM MA: Sistema de Gestión para Gimnasios
 GYM MA es una solución integral y ligera diseñada para la administración eficiente de centros deportivos. Centraliza el control de socios, planes, inventario y finanzas en una interfaz intuitiva y segura, optimizada para entornos locales.
 
+
 🌟 Características Principales
 🗄️ Arquitectura de Datos Robusta: Base de datos relacional con cifrado BCRYPT para contraseñas y prevención de Inyecciones SQL mediante PDO.
 
