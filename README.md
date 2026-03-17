@@ -80,7 +80,7 @@ Soporte: Para consultas técnicas o personalizaciones, contacta al administrador
 
 <img width="1264" height="723" alt="image" src="https://github.com/user-attachments/assets/753a70e7-e68d-4779-915e-fb0256161eb4" />
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ⚔️ Gimnasio Spartan - Manual de Instalación
 Este repositorio contiene el sistema de gestión para el Gimnasio Spartan. A continuación, se detallan los pasos para su despliegue en entornos Linux (Producción) y Windows (Desarrollo).
@@ -89,6 +89,7 @@ Este repositorio contiene el sistema de gestión para el Gimnasio Spartan. A con
 A. Preparación del Entorno
 Utilizaremos /var/www/gym como ruta oficial.
 
+
 Bash
 # Crear la carpeta y asignar propiedad a tu usuario para clonar
 sudo mkdir -p /var/www/gym
@@ -96,6 +97,7 @@ sudo chown $USER:$USER /var/www/gym
 cd /var/www/gym
 
 # Clonar el repositorio
+
 git clone https://github.com/leninobregon/gymma .
 B. Configuración de Apache (Puerto 82)
 Crear Virtual Host: sudo nano /etc/apache2/sites-available/gym.conf
