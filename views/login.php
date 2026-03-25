@@ -3,11 +3,40 @@ session_start();
 require_once "../config/Database.php";
 require_once "../config/AppConfig.php";
 
-// Inicializar conexión y configuración
 $db = (new Database())->getConnection();
 $config = (new AppConfig($db))->obtenerConfig();
 
-// Si ya inició sesión, lo mandamos al dashboard
+$tema = $config['tema'] ?? 'default';
+$_SESSION['tema'] = $tema;
+
+$bg_color = '#f4f4f4';
+$card_bg = '#ffffff';
+$text_color = '#333333';
+$label_color = '#555555';
+$input_bg = '#ffffff';
+$input_text = '#333333';
+$input_border = '#dddddd';
+$border_top = '#27ae60';
+
+if ($tema === 'oscuro') {
+    $bg_color = '#121212';
+    $card_bg = '#1e1e1e';
+    $text_color = '#e0e0e0';
+    $label_color = '#aaaaaa';
+    $input_bg = '#2a2a2a';
+    $input_text = '#e0e0e0';
+    $input_border = '#444444';
+} elseif ($tema === 'darkblue') {
+    $bg_color = '#0d1b2a';
+    $card_bg = '#1b263b';
+    $text_color = '#e0e0e0';
+    $label_color = '#94a3b8';
+    $input_bg = '#0d1b2a';
+    $input_text = '#e0e0e0';
+    $input_border = '#334155';
+    $border_top = '#3498db';
+}
+
 if (isset($_SESSION['user_id'])) {
     header("Location: dashboard.php");
     exit();
@@ -59,67 +88,18 @@ if (isset($_SESSION['user_id'])) {
             text-transform: uppercase;
         }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 700;
-            color: #555;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 5px rgba(0,0,0,0.1);
-        }
-
-        .btn-login {
-            width: 100%;
-            padding: 14px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .btn-login:hover {
-            filter: brightness(1.1);
-        }
-
-        .alert-error {
-            background: #fff5f5;
-            color: #c53030;
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-            border-left: 5px solid #c53030;
-        }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 700; color: <?php echo $label_color; ?>; font-size: 0.85rem; text-transform: uppercase; }
+        .form-control { width: 100%; padding: 12px; border: 1px solid <?php echo $input_border; ?>; border-radius: 8px; box-sizing: border-box; font-size: 1rem; background: <?php echo $input_bg; ?>; color: <?php echo $input_text; ?>; }
+        .form-control:focus { border-color: <?php echo $border_top; ?>; outline: none; }
+        .btn-login { width: 100%; padding: 14px; background: <?php echo $border_top; ?>; color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-login:hover { filter: brightness(1.1); }
+        .alert-error { background: #fdecea; color: #e74c3c; padding: 12px; border-radius: 8px; text-align: center; font-size: 0.9rem; margin-bottom: 20px; border-left: 4px solid #e74c3c; }
     </style>
 </head>
-<body>
+<body style="background-color: <?php echo $bg_color; ?>; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Segoe UI', sans-serif; color: <?php echo $text_color; ?>;">
 
-<div class="login-card">
+<div style="background: <?php echo $card_bg; ?>; width: 100%; max-width: 400px; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-top: 5px solid <?php echo $border_top; ?>;">
     <div class="login-header">
         <?php 
         $rutaLogo = "../public/img/" . $config['logo_ruta'];
@@ -129,8 +109,8 @@ if (isset($_SESSION['user_id'])) {
             <div style="font-size: 3rem; margin-bottom: 10px;">🏋️‍♂️</div>
         <?php endif; ?>
         
-        <h2><?php echo $config['nombre_gym']; ?></h2>
-        <p style="color: #7f8c8d; font-size: 0.9rem; margin-top: 5px;">Sistema de Gestión</p>
+        <h2 style="text-align:center; margin:0 0 10px 0; font-size: 1.4rem; font-weight: 800; text-transform: uppercase; color: <?php echo $text_color; ?>;"><?php echo $config['nombre_gym']; ?></h2>
+        <p style="color: <?php echo $label_color; ?>; font-size: 0.9rem; margin-top: 5px;">Sistema de Gestión</p>
     </div>
 
     <?php if(isset($_GET['error'])): ?>
@@ -155,8 +135,8 @@ if (isset($_SESSION['user_id'])) {
         </button>
     </form>
     
-    <div style="text-align: center; margin-top: 25px;">
-        <small style="color: #bdc3c7;">&copy; <?php echo date('Y'); ?> Versión 2.0</small>
+    <div style="text-align: center; margin-top: 25px; color: <?php echo $label_color; ?>;">
+        <small>&copy; <?php echo date('Y'); ?> Versión 2.0</small>
     </div>
 </div>
 

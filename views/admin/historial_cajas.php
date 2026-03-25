@@ -15,6 +15,7 @@ $config = (new AppConfig($db))->obtenerConfig();
 $tasa_cambio = $config['tasa_cambio'] ?? 36.65;
 $fechaI = $_GET['desde'] ?? null;
 $fechaF = $_GET['hasta'] ?? null;
+$tema = $_SESSION['tema'] ?? 'default';
 
 $cierres = $reporteObj->getHistorialCajas($fechaI, $fechaF);
 
@@ -53,12 +54,12 @@ foreach ($cierres as $ci) {
         }
     </style>
 </head>
-<body>
+<body class="<?php echo ($tema !== 'default') ? 'tema-' . $tema : ''; ?>">
     <header>
         <div class="logo"><h2>📂 Historial de Cajas</h2></div>
         <div style="display:flex; align-items:center; gap:15px;">
             <span class="tasa-destacada">TASA REF: C$ <?= $tasa_cambio ?></span>
-            <a href="../dashboard.php" class="btn-accion" style="background:#7f8c8d; text-decoration: none;">← Volver</a>
+            <a href="../dashboard.php" class="btn-volver gris">← Volver</a>
         </div>
     </header>
 

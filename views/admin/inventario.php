@@ -24,8 +24,8 @@ $productos = $invObj->leerTodo();
 </head>
 <body>
     <header>
-        <div class="logo"><h2>📦 Gestión de Inventario</h2></div>
-        <a href="../dashboard.php" class="btn-accion" style="background:#7f8c8d;">← Volver al Dashboard</a>
+        <div class="logo"><h2><i class="fas fa-warehouse"></i> Gestión de Inventario</h2></div>
+        <a href="../dashboard.php" class="btn-volver gris">← Dashboard</a>
     </header>
 
     <div class="dashboard-wrapper">
@@ -77,8 +77,8 @@ $productos = $invObj->leerTodo();
                             <?php endif; ?>
                         </td>
                         <td style="padding: 12px; text-align: center;">
-                            <a href="editar_producto.php?id=<?php echo $prod['id']; ?>" style="text-decoration:none;">✏️</a>
-                            <a href="../../controllers/InventarioController.php?eliminar_id=<?php echo $prod['id']; ?>" onclick="return confirm('¿Eliminar producto?')" style="margin-left:10px; text-decoration:none;">🗑️</a>
+                            <a href="editar_producto.php?id=<?php echo $prod['id']; ?>" style="text-decoration:none;"><i class="fas fa-edit"></i></a>
+                            <a href="../../controllers/InventarioController.php?eliminar_id=<?php echo $prod['id']; ?>" onclick="return confirm('¿Eliminar producto?')" style="margin-left:10px; text-decoration:none;"><i class="fas fa-trash-alt"></i></a>
                         </td>
                     </tr>
                     <?php endwhile; ?>

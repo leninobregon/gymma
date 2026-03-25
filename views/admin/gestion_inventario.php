@@ -18,6 +18,7 @@ $productos = $invObj->leerTodo();
 
 // Tasa de cambio para cálculos rápidos
 $tasa = $config['tasa_cambio'] ?? 36.65;
+$tema = $_SESSION['tema'] ?? 'default';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -30,12 +31,12 @@ $tasa = $config['tasa_cambio'] ?? 36.65;
         .tasa-flotante { background: #2c3e50; color: white; padding: 5px 15px; border-radius: 20px; font-size: 12px; }
     </style>
 </head>
-<body>
+<body class="<?php echo ($tema !== 'default') ? 'tema-' . $tema : ''; ?>">
     <header>
-        <div class="logo"><h2>📦 Gestión de Inventario</h2></div>
+        <div class="logo"><h2><i class="fas fa-warehouse"></i> Gestión de Inventario</h2></div>
         <div style="display:flex; align-items:center; gap:15px;">
             <span class="tasa-flotante">Tasa: C$ <?php echo number_format($tasa, 2); ?></span>
-            <a href="../dashboard.php" class="btn-accion" style="background:#7f8c8d; text-decoration:none;">← Volver</a>
+            <a href="../dashboard.php" class="btn-volver gris">← Volver</a>
         </div>
     </header>
 
@@ -60,7 +61,15 @@ $tasa = $config['tasa_cambio'] ?? 36.65;
         </div>
 
         <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-            <table style="width: 100%; border-collapse: collapse;">
+            <div style="margin-bottom: 15px; display: flex; gap: 10px;">
+                <input type="text" id="busqueda_inventario" placeholder="<i class='fas fa-search'></i> Buscar producto..." style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; flex: 1;">
+                <select id="filtro_stock" style="padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                    <option value="todos">Todos</option>
+                    <option value="bajo">Stock bajo (≤5)</option>
+                    <option value="alto">Stock alto (>5)</option>
+                </select>
+            </div>
+            <table style="width: 100%; border-collapse: collapse;" id="tabla_inventario">
                 <thead>
                     <tr style="background: #f8f9fa; color: #7f8c8d; text-align: left; border-bottom: 2px solid #eee;">
                         <th style="padding: 15px;">DESCRIPCIÓN</th>
@@ -70,9 +79,9 @@ $tasa = $config['tasa_cambio'] ?? 36.65;
                         <th style="padding: 15px; text-align: center;">ACCIONES</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="tbody_inventario">
                     <?php while ($prod = $productos->fetch(PDO::FETCH_ASSOC)): ?>
-                    <tr style="border-bottom: 1px solid #eee;">
+                    <tr class="fila-producto" data-descripcion="<?php echo strtolower($prod['descripcion']); ?>" data-stock="<?php echo $prod['cantidad']; ?>" style="border-bottom: 1px solid #eee;">
                         <td style="padding: 15px;">
                             <strong><?php echo strtoupper($prod['descripcion']); ?></strong>
                         </td>
@@ -90,8 +99,8 @@ $tasa = $config['tasa_cambio'] ?? 36.65;
                             <?php endif; ?>
                         </td>
                         <td style="padding: 15px; text-align: center;">
-                            <a href="editar_producto.php?id=<?php echo $prod['id']; ?>" class="btn-edit" style="text-decoration:none; padding:5px 10px; background:#f1f1f1; border-radius:5px;">✏️ Editar</a>
-                            <a href="../../controllers/InventarioController.php?eliminar_id=<?php echo $prod['id']; ?>" onclick="return confirm('¿Eliminar producto?')" style="margin-left:10px; text-decoration:none; filter: grayscale(1);">🗑️</a>
+                            <a href="editar_producto.php?id=<?php echo $prod['id']; ?>" class="btn-edit" style="text-decoration:none; padding:5px 10px; background:#f1f1f1; border-radius:5px;"><i class="fas fa-edit"></i> Editar</a>
+                            <a href="../../controllers/InventarioController.php?eliminar_id=<?php echo $prod['id']; ?>" onclick="return confirm('¿Eliminar producto?')" style="margin-left:10px; text-decoration:none;"><i class="fas fa-trash-alt"></i></a>
                         </td>
                     </tr>
                     <?php endwhile; ?>
@@ -109,6 +118,30 @@ $tasa = $config['tasa_cambio'] ?? 36.65;
             let val = parseFloat(input.value) || 0;
             ref.innerText = `Ref: $ ${(val / tasa).toFixed(2)} USD`;
         });
+
+        // Filtrado de inventario
+        const inputBusq = document.getElementById('busqueda_inventario');
+        const filtroStock = document.getElementById('filtro_stock');
+        const filas = document.querySelectorAll('.fila-producto');
+
+        function filtrarInventario() {
+            const texto = inputBusq.value.toLowerCase();
+            const stock = filtroStock.value;
+            
+            filas.forEach(fila => {
+                const desc = fila.dataset.descripcion;
+                const cant = parseInt(fila.dataset.stock);
+                const coincideDesc = desc.includes(texto);
+                let coincideStock = true;
+                if (stock === 'bajo') coincideStock = cant <= 5;
+                else if (stock === 'alto') coincideStock = cant > 5;
+                
+                fila.style.display = (coincideDesc && coincideStock) ? '' : 'none';
+            });
+        }
+
+        inputBusq.addEventListener('keyup', filtrarInventario);
+        filtroStock.addEventListener('change', filtrarInventario);
     </script>
 </body>
 </html>

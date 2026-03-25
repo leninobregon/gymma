@@ -57,7 +57,7 @@ if (isset($_GET['delete'])) {
             header("Location: ../views/caja/registro_socios.php?error=borrado");
         }
     } else {
-        header("Location: ../../login.php");
+        header("Location: ../views/login.php");
     }
     exit();
 }

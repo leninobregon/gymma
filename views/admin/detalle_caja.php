@@ -5,7 +5,11 @@ if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'ADMIN') {
 }
 
 require_once "../../config/Database.php";
+require_once "../../config/AppConfig.php";
+
 $db = (new Database())->getConnection();
+$config = (new AppConfig($db))->obtenerConfig();
+$tema = $_SESSION['tema'] ?? $config['tema'] ?? 'default';
 
 $id_caja = $_GET['id'] ?? null;
 if (!$id_caja) { header("Location: historial_cajas.php"); exit(); }
@@ -48,10 +52,10 @@ foreach($ventas as $v) {
         .ref-usd { color: #27ae60; font-size: 12px; display: block; }
     </style>
 </head>
-<body>
+<body class="<?php echo ($tema !== 'default') ? 'tema-' . $tema : ''; ?>">
     <header>
-        <div class="logo"><h2>🔍 Auditoría: <?= strtoupper($caja['nombre']); ?> (Caja #<?= $id_caja ?>)</h2></div>
-        <a href="historial_cajas.php" class="btn-accion" style="background:#7f8c8d; text-decoration:none;">← Volver</a>
+        <div class="logo"><h2><i class="fas fa-search-dollar"></i> Auditoría: <?= strtoupper($caja['nombre']); ?> (Caja #<?= $id_caja ?>)</h2></div>
+        <a href="historial_cajas.php" class="btn-volver gris">← Volver</a>
     </header>
 
     <div class="dashboard-wrapper">

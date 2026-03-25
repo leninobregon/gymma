@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 17-03-2026 a las 15:09:59
+-- Tiempo de generación: 25-03-2026 a las 20:20:08
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -51,7 +51,34 @@ INSERT INTO `cajas` (`id`, `id_usuario`, `fecha_apertura`, `fecha_cierre`, `mont
 (2, 4, '2026-03-03 14:06:34', '2026-03-03 14:22:57', 515.00, 0.00, 815.00, 0.00, 815.00, 'CERRADA', 36.6243, ''),
 (3, 1, '2026-03-03 15:05:51', '2026-03-03 15:39:33', 815.00, 0.00, 935.00, 0.00, 935.00, 'CERRADA', 36.6243, 'gracias'),
 (4, 1, '2026-03-05 08:15:10', '2026-03-05 08:17:37', 935.00, 0.00, 935.00, 0.00, 935.00, 'CERRADA', 36.6243, ''),
-(5, 1, '2026-03-05 08:18:16', '2026-03-05 08:19:50', 935.00, 0.00, 935.00, 0.00, 935.00, 'CERRADA', 36.6243, '');
+(5, 1, '2026-03-05 08:18:16', '2026-03-05 08:19:50', 935.00, 0.00, 935.00, 0.00, 935.00, 'CERRADA', 36.6243, ''),
+(6, 1, '2026-03-19 08:24:30', '2026-03-19 11:01:00', 1035.00, 0.00, 1065.00, 0.00, 0.00, 'CERRADA', 36.6243, ''),
+(7, 1, '2026-03-25 10:05:32', '2026-03-25 10:05:58', 0.00, 0.00, 0.00, 0.00, 0.00, 'CERRADA', 36.6243, ''),
+(8, 1, '2026-03-25 10:15:09', '2026-03-25 10:15:56', 0.00, 0.00, 40.00, 0.00, 40.00, 'CERRADA', 36.6243, ''),
+(9, 1, '2026-03-25 11:50:03', '2026-03-25 11:50:55', 0.00, 0.00, 40.00, 0.00, 40.00, 'CERRADA', 36.6243, ''),
+(10, 1, '2026-03-25 13:00:22', '2026-03-25 13:01:12', 40.00, 0.00, 115.00, 0.00, 115.00, 'CERRADA', 36.6243, '');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `caja_egresos`
+--
+
+CREATE TABLE `caja_egresos` (
+  `id` int(11) NOT NULL,
+  `descripcion` varchar(255) NOT NULL,
+  `monto_salida` decimal(10,2) NOT NULL,
+  `fecha_egreso` datetime DEFAULT current_timestamp(),
+  `id_usuario` int(11) NOT NULL,
+  `categoria` varchar(50) DEFAULT 'GENERAL'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `caja_egresos`
+--
+
+INSERT INTO `caja_egresos` (`id`, `descripcion`, `monto_salida`, `fecha_egreso`, `id_usuario`, `categoria`) VALUES
+(1, 'PAGO MANTENIMIENTO ', 1200.00, '2026-03-25 11:56:08', 1, 'MANTENIMIENTO');
 
 -- --------------------------------------------------------
 
@@ -69,15 +96,16 @@ CREATE TABLE `configuracion` (
   `ultima_actualizacion` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `direccion_gym` text DEFAULT NULL,
   `telefono_gym` varchar(20) DEFAULT NULL,
-  `logo_ruta` varchar(255) DEFAULT 'logo_default.png'
+  `logo_ruta` varchar(255) DEFAULT 'logo_default.png',
+  `tema` varchar(20) DEFAULT 'default'
 ) ;
 
 --
 -- Volcado de datos para la tabla `configuracion`
 --
 
-INSERT INTO `configuracion` (`id`, `nombre_gym`, `moneda_nombre`, `moneda_iso`, `moneda_simbolo`, `tipo_cambio_bcn`, `ultima_actualizacion`, `direccion_gym`, `telefono_gym`, `logo_ruta`) VALUES
-(1, 'GIMNASIO SPARTAN', 'Córdoba Nicaragüense', 'NIO', 'C$', 36.6243, '2026-03-05 14:27:00', 'Managua Nicaragua LINDA VISTA, Gasolinera Puma 1 c al S.', '88888888', 'logo_principal.png');
+INSERT INTO `configuracion` (`id`, `nombre_gym`, `moneda_nombre`, `moneda_iso`, `moneda_simbolo`, `tipo_cambio_bcn`, `ultima_actualizacion`, `direccion_gym`, `telefono_gym`, `logo_ruta`, `tema`) VALUES
+(1, 'GIMNASIO SPARTANS', 'Córdoba Nicaragüense', 'NIO', 'C$', 36.6243, '2026-03-25 19:11:16', 'Managua Nicaragua LINDA VISTA, Gasolinera Puma 1 c al S. ', '88888888', 'logo_principal.png', 'darkblue');
 
 -- --------------------------------------------------------
 
@@ -97,8 +125,8 @@ CREATE TABLE `inventario` (
 --
 
 INSERT INTO `inventario` (`id`, `descripcion`, `precio`, `cantidad`) VALUES
-(1, 'Botella Agua  Litro', 20.00, 77),
-(2, 'Coca Cola 12 OZ', 15.00, 27);
+(1, 'Botella Agua  Litro', 20.00, 73),
+(2, 'Coca Cola 12 OZ', 15.00, 22);
 
 -- --------------------------------------------------------
 
@@ -140,6 +168,7 @@ CREATE TABLE `socios` (
   `foto_ruta` varchar(255) DEFAULT 'default.png',
   `estado` enum('ACTIVO','INACTIVO','DEUDOR') DEFAULT 'ACTIVO',
   `fecha_vencimiento` date DEFAULT NULL,
+  `fecha_renovacion` date DEFAULT NULL,
   `id_plan` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -147,8 +176,8 @@ CREATE TABLE `socios` (
 -- Volcado de datos para la tabla `socios`
 --
 
-INSERT INTO `socios` (`id`, `nombre`, `apellido`, `cedula`, `edad`, `telefono`, `enfermedad`, `fecha_ingreso`, `emergencia_contacto`, `foto_ruta`, `estado`, `fecha_vencimiento`, `id_plan`) VALUES
-(11, 'Juan', 'Lopez', 'N/A', 18, '89900000', 'Ninguna', '2026-03-03', 'Jonas 8888800', 'default.png', 'ACTIVO', '2026-04-02', 1);
+INSERT INTO `socios` (`id`, `nombre`, `apellido`, `cedula`, `edad`, `telefono`, `enfermedad`, `fecha_ingreso`, `emergencia_contacto`, `foto_ruta`, `estado`, `fecha_vencimiento`, `fecha_renovacion`, `id_plan`) VALUES
+(11, 'Juan', 'Lopez', 'N/A', 18, '89900000', 'Ninguna', '2026-03-03', 'Jonas 8888800', 'default.png', 'ACTIVO', '2026-04-02', NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -174,7 +203,8 @@ CREATE TABLE `usuarios` (
 
 INSERT INTO `usuarios` (`id`, `nombre`, `apellido`, `usuario`, `cedula`, `password`, `telefono`, `rol`, `fecha_creacion`) VALUES
 (1, 'Administrador', 'General', 'admin', '001-000000-0000A', '$2y$10$AdGxvloNGYnjjj55Dnpli.edXvnGs5R6OgAjvoOzQ5VdW/91PX7PW', '88888888', 'ADMIN', '2026-02-26 22:50:35'),
-(4, 'Briana', 'Lopez', 'blopez', 'N/A', '$2y$10$OhjxGqP9YS3qmF5v3EHRTesWc2M6uXkHVsNBSyquYdJWbXAR3tBN6', '888', 'CAJA', '2026-02-27 16:26:48');
+(4, 'Briana', 'Lopez', 'blopez', 'N/A', '$2y$10$OhjxGqP9YS3qmF5v3EHRTesWc2M6uXkHVsNBSyquYdJWbXAR3tBN6', '888', 'CAJA', '2026-02-27 16:26:48'),
+(7, 'Pedro', 'Perez', 'pperez', '001 010189 000Q', '$2y$10$7Hoh3uLEAgJvSV8xXf5/GezjxTEzsMMSXuew2WkRprNFCQxENFE7e', NULL, 'CAJA', '2026-03-25 19:04:39');
 
 -- --------------------------------------------------------
 
@@ -256,7 +286,11 @@ INSERT INTO `ventas` (`id`, `id_usuario`, `id_caja`, `id_socio`, `monto_total`, 
 (49, 4, 1, NULL, 15.00, 36.6243, 'NIO', 'Venta Art: Coca Cola 12 OZ (x1)', 1, 'PRODUCTO', 2, 1, 'EFECTIVO', '2026-03-03 19:57:01', 'COMPLETADO'),
 (50, 4, 2, NULL, 300.00, 36.6243, 'NIO', 'Plan: Mensualidad Pesas', 1, 'PLAN', 1, 1, 'EFECTIVO', '2026-03-03 20:06:58', 'COMPLETADO'),
 (51, 1, 3, NULL, 60.00, 36.6243, 'NIO', 'Venta Art: Coca Cola 12 OZ (x4)', 1, 'PRODUCTO', 2, 4, 'EFECTIVO', '2026-03-03 21:06:15', 'COMPLETADO'),
-(52, 1, 3, NULL, 60.00, 36.6243, 'NIO', 'Venta Art: Botella Agua  Litro (x3)', 1, 'PRODUCTO', 1, 3, 'EFECTIVO', '2026-03-03 21:22:40', 'COMPLETADO');
+(52, 1, 3, NULL, 60.00, 36.6243, 'NIO', 'Venta Art: Botella Agua  Litro (x3)', 1, 'PRODUCTO', 1, 3, 'EFECTIVO', '2026-03-03 21:22:40', 'COMPLETADO'),
+(53, 1, 6, NULL, 30.00, 36.6243, 'NIO', 'Venta Art: Coca Cola 12 OZ (x2)', 1, 'PRODUCTO', 2, 2, 'EFECTIVO', '2026-03-19 14:24:45', 'ANULADO'),
+(54, 1, 8, NULL, 40.00, 36.6243, 'NIO', 'Venta Art: Botella Agua  Litro (x2)', 1, 'PRODUCTO', 1, 2, 'EFECTIVO', '2026-03-25 16:15:31', 'COMPLETADO'),
+(55, 1, 9, NULL, 40.00, 36.6243, 'NIO', 'Venta Art: Botella Agua  Litro (x2)', 1, 'PRODUCTO', 1, 2, 'EFECTIVO', '2026-03-25 17:50:12', 'COMPLETADO'),
+(56, 1, 10, NULL, 75.00, 36.6243, 'NIO', 'Venta Art: Coca Cola 12 OZ (x5)', 1, 'PRODUCTO', 2, 5, 'EFECTIVO', '2026-03-25 19:00:47', 'COMPLETADO');
 
 --
 -- Índices para tablas volcadas
@@ -266,6 +300,12 @@ INSERT INTO `ventas` (`id`, `id_usuario`, `id_caja`, `id_socio`, `monto_total`, 
 -- Indices de la tabla `cajas`
 --
 ALTER TABLE `cajas`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `caja_egresos`
+--
+ALTER TABLE `caja_egresos`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -317,7 +357,13 @@ ALTER TABLE `ventas`
 -- AUTO_INCREMENT de la tabla `cajas`
 --
 ALTER TABLE `cajas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT de la tabla `caja_egresos`
+--
+ALTER TABLE `caja_egresos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `inventario`
@@ -341,13 +387,13 @@ ALTER TABLE `socios`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `ventas`
 --
 ALTER TABLE `ventas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
 
 --
 -- Restricciones para tablas volcadas

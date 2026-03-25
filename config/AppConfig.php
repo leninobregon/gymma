@@ -6,12 +6,15 @@ class AppConfig {
 
     public function __construct($db) {
         $this->conn = $db;
+        $this->asegurarColumnaTema();
     }
 
-    /**
-     * Obtiene la configuración y la guarda en caché para evitar múltiples
-     * consultas a la base de datos en una misma ejecución.
-     */
+    private function asegurarColumnaTema() {
+        try {
+            $this->conn->exec("ALTER TABLE configuracion ADD COLUMN tema VARCHAR(20) DEFAULT 'default'");
+        } catch (PDOException $e) {}
+    }
+
     public function obtenerConfig() {
         if ($this->config_cache !== null) {
             return $this->config_cache;
@@ -21,18 +24,17 @@ class AppConfig {
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         $this->config_cache = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!isset($this->config_cache['tema']) || empty($this->config_cache['tema'])) {
+            $this->config_cache['tema'] = 'default';
+        }
+        
         return $this->config_cache;
     }
 
-    /**
-     * Método Auxiliar: Convierte montos dinámicamente
-     * @param float $monto Monto base en Córdobas
-     * @param string $hacia 'USD' o 'COR'
-     * @return float
-     */
     public function convertir($monto, $hacia = 'USD') {
         $config = $this->obtenerConfig();
-        $tasa = $config['tasa_cambio'] ?? 36.65;
+        $tasa = $config['tipo_cambio_bcn'] ?? 36.65;
 
         if ($hacia === 'USD') {
             return $monto / $tasa;

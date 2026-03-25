@@ -1,7 +1,12 @@
 <?php
-require_once "../config/Database.php";
 session_start();
 
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../views/login.php");
+    exit();
+}
+
+require_once "../config/Database.php";
 $db = (new Database())->getConnection();
 
 // --- ACCIÓN: ABRIR CAJA ---
@@ -66,7 +71,7 @@ if (isset($_POST['btn_cerrar_caja'])) {
             exit();
         }
     } catch (PDOException $e) {
-        header("Location: ../views/caja/cierre_caja.php?error=" . urlencode($e->getMessage()));
+        header("Location: ../views/caja/cerrar_caja.php?error=" . urlencode($e->getMessage()));
         exit();
     }
 }

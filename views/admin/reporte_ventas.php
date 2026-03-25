@@ -13,6 +13,7 @@ $config = $configObj->obtenerConfig();
 
 // Tasa de cambio oficial del sistema
 $tasa = $config['tasa_cambio'] ?? 36.65;
+$tema = $_SESSION['tema'] ?? 'default';
 
 // Filtros de fecha
 $fecha_inicio = $_GET['desde'] ?? date('Y-m-01');
@@ -65,14 +66,14 @@ foreach($reporte as $r) {
         @media print { .btn-accion, form, header { display: none; } .dashboard-wrapper { margin: 0; padding: 0; } }
     </style>
 </head>
-<body>
+<body class="<?php echo ($tema !== 'default') ? 'tema-' . $tema : ''; ?>">
     <header>
-        <div class="logo"><h2>📊 Reporte Consolidado</h2></div>
+        <div class="logo"><h2><i class="fas fa-file-invoice-dollar"></i> Reporte Consolidado</h2></div>
         <div style="display:flex; align-items:center; gap:15px;">
             <span style="background:#2c3e50; color:white; padding:5px 12px; border-radius:20px; font-size:12px; font-weight:bold;">
                 Tasa: C$ <?= number_format($tasa, 2) ?>
             </span>
-            <a href="../dashboard.php" class="btn-accion" style="background:#7f8c8d; text-decoration:none;">← Volver</a>
+            <a href="../dashboard.php" class="btn-volver gris">← Volver</a>
         </div>
     </header>
 
@@ -85,7 +86,7 @@ foreach($reporte as $r) {
                 <div><label style="display:block; font-size:12px; color:gray;">Hasta:</label>
                 <input type="date" name="hasta" value="<?=$fecha_fin?>" style="padding:8px; border:1px solid #ddd; border-radius:6px;"></div>
                 
-                <button type="submit" class="btn-accion" style="background:var(--primary);">🔍 Filtrar Datos</button>
+                <button type="submit" class="btn-accion" style="background:var(--primary);"><i class="fas fa-filter"></i> Filtrar Datos</button>
                 <button type="button" onclick="window.print()" class="btn-accion" style="background:#34495e;">🖨️ Imprimir Reporte</button>
             </form>
         </div>

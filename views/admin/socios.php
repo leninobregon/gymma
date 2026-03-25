@@ -1,7 +1,11 @@
 <?php
 session_start();
 require_once "../../config/Database.php";
+require_once "../../config/AppConfig.php";
+
 $db = (new Database())->getConnection();
+$config = (new AppConfig($db))->obtenerConfig();
+$tema = $_SESSION['tema'] ?? $config['tema'] ?? 'default';
 
 // Consulta que calcula los días restantes entre hoy y el vencimiento
 $sql = "SELECT *, DATEDIFF(fecha_vencimiento, CURDATE()) as dias_restantes FROM socios ORDER BY nombre ASC";
@@ -22,16 +26,16 @@ $socios = $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
         .search-box { padding: 10px; width: 100%; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 20px; }
     </style>
 </head>
-<body>
+<body class="<?php echo ($tema !== 'default') ? 'tema-' . $tema : ''; ?>">
     <header>
-        <div class="logo"><h2>👥 Listado de Socios</h2></div>
-        <a href="../dashboard.php" class="btn-accion" style="background:#7f8c8d;">← Volver</a>
+        <div class="logo"><h2><i class="fas fa-id-card-alt"></i> Listado de Socios</h2></div>
+        <a href="../dashboard.php" class="btn-volver gris">← Volver</a>
     </header>
 
     <div class="dashboard-wrapper">
         <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
             
-            <input type="text" id="busquedaSocio" class="search-box" placeholder="🔍 Buscar por nombre o identificación...">
+            <input type="text" id="busquedaSocio" class="search-box" placeholder="<i class='fas fa-search'></i> Buscar por nombre o identificación...">
 
             <table style="width:100%; border-collapse: collapse;" id="tablaSocios">
                 <thead>
@@ -78,7 +82,7 @@ $socios = $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
                         </td>
                         <td style="text-align:right;">
                             <a href="../caja/punto_venta.php?id_socio=<?php echo $s['id']; ?>" title="Cobrar" style="text-decoration:none; font-size:22px;">💰</a>
-                            <a href="editar_socio.php?id=<?php echo $s['id']; ?>" title="Editar" style="text-decoration:none; font-size:20px; margin-left:12px;">✏️</a>
+                            <a href="editar_socio.php?id=<?php echo $s['id']; ?>" title="Editar" style="text-decoration:none; font-size:20px; margin-left:12px;"><i class="fas fa-edit"></i></a>
                         </td>
                     </tr>
                     <?php endforeach; ?>

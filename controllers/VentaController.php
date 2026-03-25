@@ -1,6 +1,6 @@
 <?php
 session_start();
-if (!isset($_SESSION['user_id'])) { header("Location: ../../login.php"); exit(); }
+if (!isset($_SESSION['user_id'])) { header("Location: ../views/login.php"); exit(); }
 require_once "../config/Database.php";
 
 $db = (new Database())->getConnection();
@@ -12,7 +12,7 @@ $moneda_sistema = $_SESSION['moneda'] ?? 'COR';
 // --- LÓGICA DE PROCESAR PAGO ---
 if (isset($_POST['procesar_pago'])) {
     if (!isset($_SESSION['id_caja'])) {
-        header("Location: ../views/caja/apertura_caja.php?err=caja_no_encontrada");
+        header("Location: ../views/caja/punto_venta.php?err=caja_no_encontrada");
         exit();
     }
 

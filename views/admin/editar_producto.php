@@ -14,6 +14,7 @@ $config = $configObj->obtenerConfig();
 
 // Tasa de cambio para la referencia visual
 $tasa = $config['tipo_cambio_bcn'] ?? 36.6243;
+$tema = $_SESSION['tema'] ?? 'default';
 
 $id = $_GET['id'] ?? 0;
 $query = "SELECT * FROM inventario WHERE id = ? LIMIT 1";
@@ -34,12 +35,12 @@ if (!$p) { header("Location: gestion_inventario.php"); exit(); }
         .tasa-info { font-size: 11px; background: #f1f1f1; padding: 4px 10px; border-radius: 5px; color: #555; }
     </style>
 </head>
-<body>
+<body class="<?php echo ($tema !== 'default') ? 'tema-' . $tema : ''; ?>">
     <header>
-        <div class="logo"><h2>✏️ Editar Producto</h2></div>
+        <div class="logo"><h2><i class="fas fa-box-open"></i> Editar Producto</h2></div>
         <div style="display:flex; align-items:center; gap:15px;">
             <span class="tasa-info">Tasa Ref: C$ <?php echo number_format($tasa, 2); ?></span>
-            <a href="gestion_inventario.php" class="btn-accion" style="background:#7f8c8d; text-decoration:none;">← Cancelar</a>
+            <a href="gestion_inventario.php" class="btn-volver gris">← Cancelar</a>
         </div>
     </header>
 

@@ -15,7 +15,8 @@ $userObj = new Usuario($db);
 $config = (new AppConfig($db))->obtenerConfig();
 
 $tasa_cambio = $config['tasa_cambio'] ?? 36.65;
-$usuarios = $userObj->listarUsuarios(); // Asegúrate de que este método exista en la clase
+$usuarios = $userObj->listarUsuarios();
+$tema = $_SESSION['tema'] ?? 'default';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -42,12 +43,12 @@ $usuarios = $userObj->listarUsuarios(); // Asegúrate de que este método exista
         .btn-mini { padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; }
     </style>
 </head>
-<body>
+<body class="<?php echo ($tema !== 'default') ? 'tema-' . $tema : ''; ?>">
     <header>
-        <div class="logo"><h2>👥 Gestión de Usuarios</h2></div>
+        <div class="logo"><h2><i class="fas fa-user-cog"></i> Gestión de Usuarios</h2></div>
         <div style="display:flex; align-items:center; gap:15px;">
             <span class="tasa-destacada">TASA REF: C$ <?= $tasa_cambio ?></span>
-            <a href="../dashboard.php" class="btn-accion" style="background:#7f8c8d; text-decoration: none;">← Volver</a>
+            <a href="../dashboard.php" class="btn-volver gris">← Volver</a>
         </div>
     </header>
 
@@ -59,7 +60,7 @@ $usuarios = $userObj->listarUsuarios(); // Asegúrate de que este método exista
             <?php elseif($_GET['res'] == 'actualizado'): ?>
                 <div class="alerta alerta-exito">💾 Cambios guardados con éxito.</div>
             <?php elseif($_GET['res'] == 'eliminado'): ?>
-                <div class="alerta alerta-exito">🗑️ Usuario eliminado del sistema.</div>
+                <div class="alerta alerta-exito"><i class="fas fa-check-circle"></i> Usuario eliminado del sistema.</div>
             <?php elseif($_GET['res'] == 'autoerror'): ?>
                 <div class="alerta alerta-error">❌ No puedes eliminar tu propia cuenta.</div>
             <?php elseif($_GET['res'] == 'error'): ?>
@@ -122,12 +123,12 @@ $usuarios = $userObj->listarUsuarios(); // Asegúrate de que este método exista
                         </td>
                         <td><?php echo $row['cedula']; ?></td>
                         <td style="text-align: center;">
-                            <a href="editar_usuario.php?id=<?php echo $row['id']; ?>" class="btn-mini" style="background:#f1c40f; color:black;">✏️ Editar</a>
+                            <a href="editar_usuario.php?id=<?php echo $row['id']; ?>" class="btn-mini" style="background:#f1c40f; color:black;"><i class="fas fa-edit"></i> Editar</a>
                             
                             <?php if($row['id'] != $_SESSION['user_id']): ?>
                                 <a href="../../controllers/UsuarioController.php?eliminar=<?php echo $row['id']; ?>" 
                                    onclick="return confirm('¿Está seguro de eliminar permanentemente a este usuario?')" 
-                                   class="btn-mini" style="background:#e74c3c; color:white; margin-left:5px;">🗑️ Borrar</a>
+                                   class="btn-mini" style="background:#e74c3c; color:white; margin-left:5px;"><i class="fas fa-trash-alt"></i> Borrar</a>
                             <?php else: ?>
                                 <small style="color:#bdc3c7; font-style:italic;">(Tú)</small>
                             <?php endif; ?>

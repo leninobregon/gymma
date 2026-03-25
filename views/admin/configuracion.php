@@ -7,6 +7,9 @@ require_once "../../config/AppConfig.php";
 $db = (new Database())->getConnection();
 $config = (new AppConfig($db))->obtenerConfig();
 
+$tema_actual = $config['tema'] ?? 'default';
+$_SESSION['tema'] = $tema_actual;
+
 $monedas = [
     ['iso'=>'NIO', 'nom'=>'Córdoba Nicaragüense', 'sim'=>'C$'],
     ['iso'=>'USD', 'nom'=>'Dólar Estadounidense', 'sim'=>'$'],
@@ -22,12 +25,14 @@ $monedas = [
     <title>Configuración - <?php echo $config['nombre_gym']; ?></title>
     <link rel="stylesheet" href="../../public/css/estilos.css">
     <style>
-        .card { background: white; padding: 30px; border-radius: 12px; max-width: 800px; margin: 0 auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .card { background: var(--bg-card); padding: 30px; border-radius: 12px; max-width: 800px; margin: 0 auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid var(--border-color); color: var(--text-main); }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .f-group { display: flex; flex-direction: column; margin-bottom: 15px; }
-        label { font-weight: bold; font-size: 0.8rem; color: #555; margin-bottom: 5px; }
-        input, select, textarea { padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
-        .bcn { background: #eef7ff; padding: 15px; border-radius: 8px; border-left: 4px solid #2980b9; grid-column: span 2; }
+        label { font-weight: bold; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; }
+        input, select, textarea { padding: 10px; border: 1px solid var(--input-border); border-radius: 6px; background: var(--input-bg); color: var(--input-text); }
+        .bcn { background: var(--bg-card); padding: 15px; border-radius: 8px; border-left: 4px solid #2980b9; grid-column: span 2; border: 1px solid var(--border-color); }
+        body { background-color: var(--bg-body); color: var(--text-main); }
+        header { background: var(--header-bg); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
         
         /* ESTILO ACTUALIZADO PARA REDONDEAR EL LOGO */
         #pre { 
@@ -41,10 +46,10 @@ $monedas = [
         }
     </style>
 </head>
-<body>
+<body class="<?php echo ($tema_actual !== 'default') ? 'tema-' . $tema_actual : ''; ?>">
     <header>
-        <div class="logo"><h2>⚙️ Configuración General</h2></div>
-        <a href="../dashboard.php" class="btn-accion" style="background:#7f8c8d;">← Volver</a>
+        <div class="logo"><h2><i class="fas fa-cogs"></i> Configuración General</h2></div>
+        <a href="../dashboard.php" class="btn-volver gris">← Volver</a>
     </header>
 
     <div class="dashboard-wrapper">
@@ -88,6 +93,27 @@ $monedas = [
                     <div class="bcn">
                         <label style="color:#2980b9;">TASA DE CAMBIO BCN (1 USD a NIO)</label>
                         <input type="number" step="0.0001" name="tipo_cambio_bcn" value="<?php echo $config['tipo_cambio_bcn']; ?>" style="width:100%; font-size:1.2rem; font-weight:bold; color:#2980b9;">
+                    </div>
+
+                    <div class="f-group" style="grid-column: span 2;">
+                        <label>APARIENCIA - TEMA</label>
+                        <div style="display:flex; gap:15px; margin-top:10px;">
+                            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                                <input type="radio" name="tema" value="default" <?php echo ($config['tema'] ?? 'default') == 'default' ? 'checked' : ''; ?>>
+                                <span style="width:30px; height:30px; background:#f4f4f4; border:2px solid #ddd; border-radius:6px; display:inline-block;"></span>
+                                <span>Claro</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                                <input type="radio" name="tema" value="oscuro" <?php echo ($config['tema'] ?? '') == 'oscuro' ? 'checked' : ''; ?>>
+                                <span style="width:30px; height:30px; background:#1a1a1a; border:2px solid #333; border-radius:6px; display:inline-block;"></span>
+                                <span>Oscuro</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                                <input type="radio" name="tema" value="darkblue" <?php echo ($config['tema'] ?? '') == 'darkblue' ? 'checked' : ''; ?>>
+                                <span style="width:30px; height:30px; background:#0d1b2a; border:2px solid #1b263b; border-radius:6px; display:inline-block;"></span>
+                                <span>Dark Blue</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 

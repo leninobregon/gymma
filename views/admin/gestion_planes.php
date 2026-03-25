@@ -16,6 +16,7 @@ $planes = $planObj->listarTodo();
 
 // Tasa de cambio para cálculos de referencia
 $tasa = $config['tasa_cambio'] ?? 36.65;
+$tema = $_SESSION['tema'] ?? 'default';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -30,12 +31,12 @@ $tasa = $config['tasa_cambio'] ?? 36.65;
         .input-hint { position: absolute; bottom: -18px; left: 5px; font-size: 10px; color: #27ae60; font-weight: bold; }
     </style>
 </head>
-<body>
+<body class="<?php echo ($tema !== 'default') ? 'tema-' . $tema : ''; ?>">
     <header>
-        <div class="logo"><h2>💳 Gestión de Planes</h2></div>
+        <div class="logo"><h2><i class="fas fa-tags"></i> Gestión de Planes</h2></div>
         <div style="display:flex; align-items:center; gap:15px;">
             <span class="tasa-ref">Tasa: C$ <?php echo number_format($tasa, 2); ?></span>
-            <a href="../dashboard.php" class="btn-accion" style="background:#7f8c8d; text-decoration:none;">← Volver</a>
+            <a href="../dashboard.php" class="btn-volver gris">← Volver</a>
         </div>
     </header>
 
@@ -80,8 +81,8 @@ $tasa = $config['tasa_cambio'] ?? 36.65;
                             <span class="precio-usd">$ <?php echo number_format($row['precio'] / $tasa, 2); ?></span>
                         </td>
                         <td style="padding: 15px; text-align: center;">
-                            <a href="editar_plan.php?id=<?php echo $row['id']; ?>" style="text-decoration:none; margin-right:10px;">✏️</a>
-                            <a href="../../controllers/PlanController.php?eliminar_id=<?php echo $row['id']; ?>" onclick="return confirm('¿Eliminar plan?')" style="text-decoration:none;">🗑️</a>
+                            <a href="editar_plan.php?id=<?php echo $row['id']; ?>" style="text-decoration:none; margin-right:10px;"><i class="fas fa-edit"></i></a>
+                            <a href="../../controllers/PlanController.php?eliminar_id=<?php echo $row['id']; ?>" onclick="return confirm('¿Eliminar plan?')" style="text-decoration:none;"><i class="fas fa-trash-alt"></i></a>
                         </td>
                     </tr>
                     <?php endwhile; ?>

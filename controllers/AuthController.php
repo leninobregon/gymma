@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once "../config/Database.php";
+require_once "../config/AppConfig.php";
 require_once "../classes/Usuario.php";
 
 if (isset($_POST['btn_login'])) {
@@ -18,6 +19,9 @@ if (isset($_POST['btn_login'])) {
         $_SESSION['nombre']  = $auth['nombre'];
         $_SESSION['usuario'] = $auth['usuario'];
         $_SESSION['rol']     = $auth['rol'];
+
+        $config = (new AppConfig($database->getConnection()))->obtenerConfig();
+        $_SESSION['tema'] = $config['tema'] ?? 'default';
 
         // --- REVISA ESTA RUTA ---
         // Si el archivo está en /views/caja/registro_socios.php

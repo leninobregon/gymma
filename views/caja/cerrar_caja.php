@@ -3,7 +3,11 @@ session_start();
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['id_caja'])) { header("Location: punto_venta.php"); exit(); }
 
 require_once "../../config/Database.php";
+require_once "../../config/AppConfig.php";
+
 $db = (new Database())->getConnection();
+$config = (new AppConfig($db))->obtenerConfig();
+$tema = $_SESSION['tema'] ?? $config['tema'] ?? 'default';
 
 $id_caja = $_SESSION['id_caja'];
 
@@ -22,15 +26,16 @@ $esperado = $caja['monto_apertura'] + $totalVentas;
 <head>
     <meta charset="UTF-8">
     <title>Cierre de Caja - GYM MA</title>
+    <link rel="stylesheet" href="../../public/css/estilos.css">
     <style>
-        body { background: #f4f7f6; font-family: 'Segoe UI', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 400px; border-top: 8px solid #d63031; }
+        body { display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+        .card { padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 400px; border-top: 8px solid #d63031; }
         .fila { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: bold; }
-        input { width: 100%; padding: 12px; border: 2px solid #000; border-radius: 8px; margin-top: 5px; box-sizing: border-box; font-size: 1.2rem; text-align: center; }
+        input { width: 100%; padding: 12px; border-radius: 8px; margin-top: 5px; box-sizing: border-box; font-size: 1.2rem; text-align: center; }
         .btn-cerrar { background: #d63031; color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 20px; }
     </style>
 </head>
-<body>
+<body class="<?php echo ($tema !== 'default') ? 'tema-' . $tema : ''; ?>">
     <div class="card">
         <h2 style="text-align:center;">🔒 CERRAR TURNO</h2>
         <div class="fila"><span>Apertura:</span> <span>C$ <?=number_format($caja['monto_apertura'], 2)?></span></div>

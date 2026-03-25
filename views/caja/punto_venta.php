@@ -1,6 +1,8 @@
 <?php
 session_start();
-if (!isset($_SESSION['user_id'])) { header("Location: ../../login.php"); exit(); }
+if (!isset($_SESSION['user_id'])) { header("Location: ../login.php"); exit(); }
+
+$tema = $_SESSION['tema'] ?? 'default';
 require_once "../../config/Database.php";
 $db = (new Database())->getConnection();
 
@@ -51,30 +53,30 @@ if(isset($_GET['res'])) {
     <title>CAJA - <?php echo $config['nombre_gym']; ?></title>
     <link rel="stylesheet" href="../../public/css/estilos.css">
     <style>
-        body { background: #f4f7f6; font-family: 'Segoe UI', sans-serif; color: #000; margin: 0; }
-        .font-negra { color: #000 !important; font-weight: 600; }
-        .recaudado-header { background: #2d3436; color: white; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        body { background: var(--bg-body); font-family: 'Segoe UI', sans-serif; color: var(--text-main); margin: 0; }
+        .font-negra { color: var(--text-main) !important; font-weight: 600; }
+        .recaudado-header { background: var(--header-bg); color: white; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .monto-total { font-size: 1.5rem; font-weight: bold; color: #55efc4; }
         .caja-layout { display: grid; grid-template-columns: 320px 1fr; gap: 20px; padding: 20px; }
-        .stat-card { background: white; padding: 18px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        input, select { width: 100%; padding: 10px; font-size: 0.95rem; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; color: #000; font-weight: 500; }
+        .stat-card { background: var(--bg-card); padding: 18px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid var(--border-color); color: var(--text-main); }
+        input, select { width: 100%; padding: 10px; font-size: 0.95rem; border: 1px solid var(--input-border); border-radius: 5px; margin-bottom: 10px; color: var(--input-text); font-weight: 500; background: var(--input-bg); }
         
-        .calculadora-box { background: #f1f2f6; padding: 15px; border-radius: 10px; border: 1px solid #ced4da; }
-        .label-calc { color: #2d3436 !important; font-weight: 700; font-size: 0.85rem; display: block; margin-bottom: 5px; }
+        .calculadora-box { background: var(--light); padding: 15px; border-radius: 10px; border: 1px solid var(--border-color); }
+        .label-calc { color: var(--text-main) !important; font-weight: 700; font-size: 0.85rem; display: block; margin-bottom: 5px; }
         .vuelto-txt { font-size: 1.5rem; color: #27ae60; font-weight: 800; text-align: center; display: block; }
         
         .btn-pagar { width: 100%; padding: 12px; background: #27ae60; color: white; border: none; border-radius: 6px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
-        .btn-dashboard { background: #34495e; color: white; padding: 8px 15px; text-decoration: none; border-radius: 5px; font-size: 0.85rem; font-weight: bold; }
+        .btn-dashboard { background: var(--header-bg); color: white; padding: 8px 15px; text-decoration: none; border-radius: 5px; font-size: 0.85rem; font-weight: bold; }
         .btn-cerrar { background: #d63031; color: white; padding: 10px; text-decoration: none; border-radius: 5px; font-size: 0.85rem; font-weight: bold; display: block; text-align: center; margin-top: 20px; }
-        .tabla-historial { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .tabla-historial td { padding: 10px; border-bottom: 1px solid #eee; font-weight: 600; color: #000; }
+        .tabla-historial { width: 100%; border-collapse: collapse; margin-top: 10px; background: var(--bg-card); }
+        .tabla-historial td { padding: 10px; border-bottom: 1px solid var(--border-color); font-weight: 600; color: var(--text-main); }
     </style>
 </head>
-<body>
+<body class="<?php echo ($tema !== 'default') ? 'tema-' . $tema : ''; ?>">
 
     <header class="recaudado-header">
         <div style="display:flex; align-items:center; gap:15px;">
-            <span style="font-size: 1.8rem;">🏦</span>
+            <span style="font-size: 1.8rem;"><i class="fas fa-cash-register"></i></span>
             <h2 style="margin:0; font-size: 1.2rem;">CAJA ACTIVA #<?php echo $_SESSION['id_caja']; ?></h2>
         </div>
         <div style="text-align: right; display: flex; align-items: center; gap: 20px;">
@@ -82,21 +84,21 @@ if(isset($_GET['res'])) {
                 <small style="display:block; font-size: 0.65rem; opacity: 0.8; text-transform: uppercase;">Recaudado (<?php echo $moneda_usuario; ?>)</small>
                 <span class="monto-total"><?php echo $simbolo . " " . number_format($recaudadoTurno, 2); ?></span>
             </div>
-            <a href="../dashboard.php" class="btn-dashboard">🏠 IR AL DASHBOARD</a>
+            <a href="../dashboard.php" class="btn-volver gris"><i class="fas fa-home"></i> Dashboard</a>
         </div>
     </header>
 
     <div class="dashboard-wrapper">
         <?php if($ultimo_id): ?>
             <div style="background: #e6fffa; color: #27ae60; padding: 15px; margin: 20px; border-left: 5px solid #27ae60; display: flex; justify-content: space-between; align-items: center;">
-                <span>✅ Venta <b>#<?php echo $ultimo_id; ?></b> procesada con éxito.</span>
-                <button onclick="reimprimir(<?php echo $ultimo_id; ?>)" style="background:#0984e3; color:white; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; font-weight:bold;">🖨️ IMPRIMIR TICKET</button>
+                <span><i class="fas fa-check-circle" style="color:#27ae60;"></i> Venta <b>#<?php echo $ultimo_id; ?></b> procesada con éxito.</span>
+                <button onclick="reimprimir(<?php echo $ultimo_id; ?>)" style="background:#0984e3; color:white; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; font-weight:bold;"><i class="fas fa-print"></i> IMPRIMIR TICKET</button>
             </div>
         <?php endif; ?>
 
         <div class="caja-layout">
             <div class="stat-card">
-                <h3 class="font-negra" style="margin-top:0; font-size: 1rem;">🔍 CLIENTE</h3>
+                <h3 class="font-negra" style="margin-top:0; font-size: 1rem;"><i class="fas fa-user"></i> CLIENTE</h3>
                 <input type="text" id="input_busqueda" placeholder="Buscar socio..." onkeyup="buscarSocio()" autofocus>
                 
                 <div id="ficha_socio" style="display:none; margin-top:15px; padding:15px; background:#f9f9f9; border: 1px solid #00b894; border-radius:8px;">
@@ -106,7 +108,7 @@ if(isset($_GET['res'])) {
                     <input type="hidden" id="id_socio_real_hidden">
                 </div>
 
-                <a href="cerrar_caja.php" class="btn-cerrar" onclick="return confirm('¿Cerrar turno de caja hoy?')">❌ CERRAR CAJA</a>
+                <a href="cerrar_caja.php" class="btn-cerrar" onclick="return confirm('¿Cerrar turno de caja hoy?')"><i class="fas fa-power-off"></i> CERRAR CAJA</a>
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 20px;">
@@ -145,7 +147,7 @@ if(isset($_GET['res'])) {
                             </select>
                         </div>
 
-                        <button type="submit" name="procesar_pago" id="btnPagar" class="btn-pagar">💰 COBRAR AHORA</button>
+                        <button type="submit" name="procesar_pago" id="btnPagar" class="btn-pagar"><i class="fas fa-credit-card"></i> COBRAR AHORA</button>
                     </form>
 
                     <div class="calculadora-box">
@@ -174,7 +176,7 @@ if(isset($_GET['res'])) {
                         <thead><tr style="text-align:left; font-size:0.8rem; color:#95a5a6;"><th>TICKET</th><th>CONCEPTO</th><th style="text-align:right;">MONTO</th><th style="text-align:center;">ACCIONES</th></tr></thead>
                         <tbody>
                             <?php
-                            $stmtH = $db->prepare("SELECT id, concepto, monto_total FROM ventas WHERE id_caja = ? ORDER BY id DESC LIMIT 5");
+                            $stmtH = $db->prepare("SELECT id, concepto, monto_total FROM ventas WHERE id_caja = ? AND estado != 'ANULADO' ORDER BY id DESC LIMIT 5");
                             $stmtH->execute([$_SESSION['id_caja']]);
                             while($v = $stmtH->fetch()): 
                                 $v_vista = mostrarMonto($v['monto_total'], $moneda_usuario, $tasa_dolar);
@@ -183,7 +185,7 @@ if(isset($_GET['res'])) {
                                 <td style="color:#e67e22;">#<?=$v['id']?></td>
                                 <td><?=$v['concepto']?></td>
                                 <td style="text-align:right; color:#27ae60;"><?=$simbolo?> <?=number_format($v_vista, 2)?></td>
-                                <td style="text-align:center;"><button onclick="reimprimir(<?=$v['id']?>)" style="cursor:pointer; border:1px solid #ddd; background:white; padding:4px 8px; border-radius:4px;">🖨️</button></td>
+                                <td style="text-align:center;"><button onclick="reimprimir(<?=$v['id']?>)" style="cursor:pointer; border:1px solid #ddd; background:white; padding:4px 8px; border-radius:4px;"><i class="fas fa-print"></i></button></td>
                             </tr>
                             <?php endwhile; ?>
                         </tbody>
@@ -225,7 +227,7 @@ if(isset($_GET['res'])) {
         if(tipo === 'PLAN' && socioEstatus === 'vigente') {
             btn.disabled = true; btn.innerText = "CLIENTE VIGENTE"; btn.style.background = "#bdc3c7";
         } else {
-            btn.disabled = false; btn.innerText = "💰 COBRAR AHORA"; btn.style.background = "#27ae60";
+            btn.disabled = false; btn.innerHTML = "<i class='fas fa-credit-card'></i> COBRAR AHORA"; btn.style.background = "#27ae60";
         }
         actualizarCalculos();
     }

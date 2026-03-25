@@ -3,9 +3,13 @@ session_start();
 if (!isset($_SESSION['rol'])) { header("Location: ../dashboard.php"); exit(); }
 
 require_once "../../config/Database.php";
+require_once "../../config/AppConfig.php";
 require_once "../../classes/Socio.php";
 
 $db = (new Database())->getConnection();
+$config = (new AppConfig($db))->obtenerConfig();
+$tema = $_SESSION['tema'] ?? $config['tema'] ?? 'default';
+
 $socioObj = new Socio($db);
 $socios = $socioObj->listarSocios();
 
@@ -28,43 +32,22 @@ function calcularEdadCedula($cedula) {
 <head>
     <meta charset="UTF-8">
     <title>SOCIOS - GYM MA</title>
+    <link rel="stylesheet" href="../../public/css/estilos.css">
     <style>
-        body { background: #f4f7f6; font-family: 'Segoe UI', Arial, sans-serif; color: #000; margin: 0; }
-        * { color: #000; } 
-
-        .header-negro { 
-            background: #2d3436; padding: 15px 25px; display: flex; 
-            align-items: center; justify-content: space-between; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-        .header-negro h2 { color: #fff; margin: 0; }
-
-        .btn-regresar {
-            background: #e17055; color: white !important; text-decoration: none;
-            font-weight: bold; padding: 10px 20px; border-radius: 5px;
-            transition: all 0.3s ease; border: none; display: inline-block;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
-        }
-        .btn-regresar:hover { background: #ff7675; transform: translateY(-2px); }
-
         .contenedor-caja { padding: 20px; }
 
-        /* 2. ESTILO DE LAS TARJETAS DE REPORTE */
         .seccion-reporte { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
         .card-mini { 
-            background: white; padding: 15px; border-radius: 10px; 
+            padding: 15px; border-radius: 10px; 
             box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; 
-            justify-content: space-between; align-items: center; border-left: 8px solid #2d3436;
+            justify-content: space-between; align-items: center; border-left: 8px solid var(--secondary);
         }
-        .card-mini h3 { margin: 0; font-size: 0.85rem; text-transform: uppercase; color: #636e72 !important; }
+        .card-mini h3 { margin: 0; font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted) !important; }
         .card-mini .numero { font-size: 1.8rem; font-weight: bold; }
 
-        .stat-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
-
-        .tabla-gym { width: 100%; border-collapse: collapse; min-width: 1000px; background: white; }
-        .tabla-gym th { background: #dfe6e9; padding: 12px; text-align: left; border-bottom: 2px solid #000; }
-        .tabla-gym td { padding: 15px; border-bottom: 1px solid #ccc; font-weight: 600; vertical-align: middle; }
-        .tabla-gym td, .tabla-gym b, .tabla-gym span, .tabla-gym small { color: #000 !important; }
+        .tabla-gym { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        .tabla-gym th { background: var(--secondary); padding: 12px; text-align: left; border-bottom: 2px solid var(--border-color); }
+        .tabla-gym td { padding: 15px; border-bottom: 1px solid var(--border-color); font-weight: 600; vertical-align: middle; }
 
         .acciones-flex { display: flex; gap: 15px; justify-content: flex-end; }
         .ico-btn { font-size: 1.6rem; text-decoration: none; transition: 0.2s; display: inline-block; }
@@ -76,21 +59,20 @@ function calcularEdadCedula($cedula) {
         .bg-noplan { background: #636e72; }  
 
         .btn-guardar { 
-            background: #27ae60; color: white !important; border: none; padding: 15px; 
+            background: var(--primary); color: white !important; border: none; padding: 15px; 
             border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; 
             margin-top: 15px; font-size: 1rem; transition: 0.3s;
         }
-        .btn-guardar:hover { background: #219150; }
+        .btn-guardar:hover { filter: brightness(1.1); }
 
         .grid-registro { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
-        input { width: 100%; padding: 10px; border: 1px solid #000; border-radius: 5px; box-sizing: border-box; font-weight: 600; }
     </style>
 </head>
-<body>
+<body class="<?php echo ($tema !== 'default') ? 'tema-' . $tema : ''; ?>">
 
-    <header class="header-negro">
-        <h2>👤 CONTROL DE SOCIOS</h2>
-        <a href="../dashboard.php" class="btn-regresar">REGRESAR A DASHBOARD</a>
+    <header>
+        <div class="logo"><h2><i class="fas fa-id-card-alt"></i> CONTROL DE SOCIOS</h2></div>
+        <a href="../dashboard.php" class="btn-volver gris">← Dashboard</a>
     </header>
 
     <div class="contenedor-caja">
@@ -98,7 +80,7 @@ function calcularEdadCedula($cedula) {
         <div class="seccion-reporte">
             <div class="card-mini" style="border-color: #27ae60;">
                 <div><h3>Socios Activos</h3><div class="numero"><?php echo $totalActivos; ?></div></div>
-                <span style="font-size: 2.2rem;">✅</span>
+                <span style="font-size: 2.2rem;"><i class="fas fa-check-circle" style="color:#27ae60;"></i></span>
             </div>
             <div class="card-mini" style="border-color: #e67e22;">
                 <div><h3>Vencen Mañana</h3><div class="numero"><?php echo $vencenManana; ?></div></div>
@@ -124,7 +106,7 @@ function calcularEdadCedula($cedula) {
         </div>
 
         <div class="stat-card" style="display:flex; gap:10px; align-items:center;">
-            <input type="text" id="input_busqueda" placeholder="🔍 Buscar socio por nombre, ID o teléfono..." style="flex:1;">
+            <input type="text" id="input_busqueda" placeholder="<i class='fas fa-search'></i> Buscar socio por nombre, ID o teléfono..." style="flex:1;">
             <button onclick="window.location.reload()" style="background:#636e72; color:white!important; border:none; padding:10px 15px; border-radius:5px; cursor:pointer; font-weight:bold;">TODOS</button>
         </div>
 
@@ -177,10 +159,10 @@ function calcularEdadCedula($cedula) {
                         <td>
                             <div class="acciones-flex">
                                 <a href="https://wa.me/505<?php echo preg_replace('/[^0-9]/','',$s['telefono']); ?>" target="_blank" class="ico-btn" title="WhatsApp">💬</a>
-                                <a href="../caja/punto_venta.php?id_socio=<?php echo $s['id']; ?>" class="ico-btn" title="Cobrar">💰</a>
-                                <a href="editar_socio.php?id=<?php echo $s['id']; ?>" class="ico-btn" title="Editar">✏️</a>
-                                <a href="../../controllers/SocioController.php?delete=<?php echo $s['id']; ?>" 
-                                   onclick="return confirm('¿Eliminar socio?')" class="ico-btn" style="color:#d63031;" title="Borrar">🗑️</a>
+                                <a href="../caja/punto_venta.php?id_socio=<?php echo $s['id']; ?>" class="ico-btn" title="Cobrar"><i class="fas fa-hand-holding-usd" style="color:#27ae60;"></i></a>
+                                <a href="editar_socio.php?id=<?php echo $s['id']; ?>" class="ico-btn" title="Editar"><i class="fas fa-edit"></i></a>
+                                <a href="../../controllers/SocioController.php?eliminar_id=<?php echo $s['id']; ?>" 
+                                   onclick="return confirm('¿Eliminar socio?')" class="ico-btn" style="color:#d63031;" title="Borrar"><i class="fas fa-trash-alt"></i></a>
                             </div>
                         </td>
                     </tr>
