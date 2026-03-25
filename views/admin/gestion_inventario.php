@@ -19,6 +19,9 @@ $productos = $invObj->leerTodo();
 // Tasa de cambio para cálculos rápidos
 $tasa = $config['tasa_cambio'] ?? 36.65;
 $tema = $_SESSION['tema'] ?? 'default';
+
+$msj = $_GET['msj'] ?? '';
+$error = $_GET['error'] ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -41,6 +44,16 @@ $tema = $_SESSION['tema'] ?? 'default';
     </header>
 
     <div class="dashboard-wrapper">
+        <?php if ($msj === 'agregado'): ?>
+            <div style="background:#d4edda; color:#155724; padding:15px; border-radius:8px; margin-bottom:20px;">✅ Producto agregado correctamente</div>
+        <?php elseif ($msj === 'actualizado'): ?>
+            <div style="background:#d4edda; color:#155724; padding:15px; border-radius:8px; margin-bottom:20px;">✅ Producto actualizado correctamente</div>
+        <?php elseif ($msj === 'eliminado'): ?>
+            <div style="background:#d4edda; color:#155724; padding:15px; border-radius:8px; margin-bottom:20px;">✅ Producto eliminado correctamente</div>
+        <?php elseif ($error === '1'): ?>
+            <div style="background:#f8d7da; color:#721c24; padding:15px; border-radius:8px; margin-bottom:20px;">❌ Error en la operación</div>
+        <?php endif; ?>
+
         <div style="background: white; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
             <h3 style="margin-top:0; color:#2c3e50;">NUEVO PRODUCTO O SERVICIO</h3>
             <form action="../../controllers/InventarioController.php" method="POST">
@@ -99,8 +112,8 @@ $tema = $_SESSION['tema'] ?? 'default';
                             <?php endif; ?>
                         </td>
                         <td style="padding: 15px; text-align: center;">
-                            <a href="editar_producto.php?id=<?php echo $prod['id']; ?>" class="btn-edit" style="text-decoration:none; padding:5px 10px; background:#f1f1f1; border-radius:5px;"><i class="fas fa-edit"></i> Editar</a>
-                            <a href="../../controllers/InventarioController.php?eliminar_id=<?php echo $prod['id']; ?>" onclick="return confirm('¿Eliminar producto?')" style="margin-left:10px; text-decoration:none;"><i class="fas fa-trash-alt"></i></a>
+                            <a href="editar_producto.php?id=<?php echo $prod['id']; ?>" class="btn-edit" style="text-decoration:none; padding:5px 10px; background:#f1f1f1; border-radius:5px;">✏️ Editar</a>
+                            <a href="../../controllers/InventarioController.php?eliminar_id=<?php echo $prod['id']; ?>" onclick="return confirm('¿Eliminar producto?')" class="btn-delete" style="margin-left:10px; text-decoration:none;">🗑️</a>
                         </td>
                     </tr>
                     <?php endwhile; ?>

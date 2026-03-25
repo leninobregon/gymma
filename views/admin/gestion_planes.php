@@ -41,6 +41,16 @@ $tema = $_SESSION['tema'] ?? 'default';
     </header>
 
     <div class="dashboard-wrapper">
+        <?php if(isset($_GET['msj'])): ?>
+            <?php if($_GET['msj'] == 'ok'): ?>
+                <div style="background:#d4edda; color:#155724; padding:15px; border-radius:8px; margin-bottom:20px; text-align:center;">✅ Plan creado exitosamente</div>
+            <?php elseif($_GET['msj'] == 'editado'): ?>
+                <div style="background:#d4edda; color:#155724; padding:15px; border-radius:8px; margin-bottom:20px; text-align:center;">💾 Plan actualizado</div>
+            <?php elseif($_GET['msj'] == 'eliminado'): ?>
+                <div style="background:#d4edda; color:#155724; padding:15px; border-radius:8px; margin-bottom:20px; text-align:center;">🗑️ Plan eliminado</div>
+            <?php endif; ?>
+        <?php endif; ?>
+        
         <div style="background: white; padding: 25px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
             <h3 style="margin-top:0; color:#2c3e50;">NUEVO PLAN DE MEMBRESÍA</h3>
             <form action="../../controllers/PlanController.php" method="POST">
@@ -81,8 +91,8 @@ $tema = $_SESSION['tema'] ?? 'default';
                             <span class="precio-usd">$ <?php echo number_format($row['precio'] / $tasa, 2); ?></span>
                         </td>
                         <td style="padding: 15px; text-align: center;">
-                            <a href="editar_plan.php?id=<?php echo $row['id']; ?>" style="text-decoration:none; margin-right:10px;"><i class="fas fa-edit"></i></a>
-                            <a href="../../controllers/PlanController.php?eliminar_id=<?php echo $row['id']; ?>" onclick="return confirm('¿Eliminar plan?')" style="text-decoration:none;"><i class="fas fa-trash-alt"></i></a>
+                            <a href="editar_plan.php?id=<?php echo $row['id']; ?>" style="text-decoration:none; margin-right:15px; color:#f39c12; font-weight:bold;" title="Editar">✏️ Editar</a>
+                            <a href="../../controllers/PlanController.php?eliminar_id=<?php echo $row['id']; ?>" onclick="return confirm('¿Eliminar plan?')" style="text-decoration:none; color:#e74c3c; font-weight:bold;" title="Eliminar">🗑️ Eliminar</a>
                         </td>
                     </tr>
                     <?php endwhile; ?>

@@ -77,6 +77,20 @@ function calcularEdadCedula($cedula) {
 
     <div class="contenedor-caja">
 
+        <?php if(isset($_GET['msj'])): ?>
+            <?php if($_GET['msj'] == 'guardado'): ?>
+                <div style="background:#d4edda; color:#155724; padding:15px; border-radius:8px; margin-bottom:20px; text-align:center; font-weight:bold;">✅ Socio registrado exitosamente</div>
+            <?php elseif($_GET['msj'] == 'editado'): ?>
+                <div style="background:#d4edda; color:#155724; padding:15px; border-radius:8px; margin-bottom:20px; text-align:center; font-weight:bold;">💾 Socio actualizado</div>
+            <?php elseif($_GET['msj'] == 'eliminado'): ?>
+                <div style="background:#d4edda; color:#155724; padding:15px; border-radius:8px; margin-bottom:20px; text-align:center; font-weight:bold;">🗑️ Socio eliminado</div>
+            <?php endif; ?>
+        <?php endif; ?>
+        
+        <?php if(isset($_GET['error'])): ?>
+            <div style="background:#f8d7da; color:#721c24; padding:15px; border-radius:8px; margin-bottom:20px; text-align:center; font-weight:bold;">⚠️ Error en la operación</div>
+        <?php endif; ?>
+
         <div class="seccion-reporte">
             <div class="card-mini" style="border-color: #27ae60;">
                 <div><h3>Socios Activos</h3><div class="numero"><?php echo $totalActivos; ?></div></div>
@@ -158,11 +172,11 @@ function calcularEdadCedula($cedula) {
                         </td>
                         <td>
                             <div class="acciones-flex">
-                                <a href="https://wa.me/505<?php echo preg_replace('/[^0-9]/','',$s['telefono']); ?>" target="_blank" class="ico-btn" title="WhatsApp">💬</a>
-                                <a href="../caja/punto_venta.php?id_socio=<?php echo $s['id']; ?>" class="ico-btn" title="Cobrar"><i class="fas fa-hand-holding-usd" style="color:#27ae60;"></i></a>
-                                <a href="editar_socio.php?id=<?php echo $s['id']; ?>" class="ico-btn" title="Editar"><i class="fas fa-edit"></i></a>
+                                <a href="https://wa.me/505<?php echo preg_replace('/[^0-9]/','',$s['telefono']); ?>" target="_blank" class="ico-btn" style="color:#25D366;" title="WhatsApp">💬</a>
+                                <a href="../caja/punto_venta.php?id_socio=<?php echo $s['id']; ?>" class="ico-btn" title="Cobrar" style="color:#27ae60;">💰</a>
+                                <a href="editar_socio.php?id=<?php echo $s['id']; ?>" class="ico-btn" style="color:#f39c12;" title="Editar">✏️</a>
                                 <a href="../../controllers/SocioController.php?eliminar_id=<?php echo $s['id']; ?>" 
-                                   onclick="return confirm('¿Eliminar socio?')" class="ico-btn" style="color:#d63031;" title="Borrar"><i class="fas fa-trash-alt"></i></a>
+                                   onclick="return confirm('¿Eliminar socio?')" class="ico-btn" style="color:#e74c3c;" title="Borrar">🗑️</a>
                             </div>
                         </td>
                     </tr>

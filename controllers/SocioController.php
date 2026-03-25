@@ -45,13 +45,12 @@ if (isset($_POST['btn_editar'])) {
     exit();
 }
 
-// --- 3. ACCIÓN: ELIMINAR SOCIO (ACCESO PARA ADMIN Y CAJA) ---
-if (isset($_GET['delete'])) {
-    // Se permite el borrado si hay una sesión activa, sin importar el rol
+// --- 3. ACCIÓN: ELIMINAR SOCIO ---
+if (isset($_GET['eliminar_id'])) {
     if (isset($_SESSION['rol'])) {
-        $id = $_GET['delete'];
+        $id = intval($_GET['eliminar_id']);
         
-        if ($socio->eliminar($id)) {
+        if ($id > 0 && $socio->eliminar($id)) {
             header("Location: ../views/caja/registro_socios.php?msj=eliminado");
         } else {
             header("Location: ../views/caja/registro_socios.php?error=borrado");
