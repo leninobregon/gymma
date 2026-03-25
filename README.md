@@ -1,222 +1,306 @@
 🏋️‍♂️ GYM MA: Sistema de Gestión para Gimnasios
-
 GYM MA es una solución integral y ligera diseñada para la administración eficiente de centros deportivos. Centraliza el control de socios, planes, inventario y finanzas en una interfaz intuitiva y segura, optimizada para entornos locales.
 
----
 
-## 🌟 Características Principales
+🌟 Características Principales
+🗄️ Arquitectura de Datos Robusta: Base de datos relacional con cifrado BCRYPT para contraseñas y prevención de Inyecciones SQL mediante PDO.
 
-### 🗄️ Arquitectura de Datos Robusta
-- Base de datos relacional con cifrado BCRYPT para contraseñas
-- Prevención de Inyecciones SQL mediante PDO
+💰 Control Financiero Total: Ciclo de caja obligatorio (Apertura -> POS -> Cierre) con soporte multimoneda (COR/USD) y registro de tasa de cambio histórica para reportes precisos.
 
-### 💰 Control Financiero Total
-- Ciclo de caja obligatorio (Apertura → POS → Cierre)
-- Soporte multimoneda (Córdobas NIO / Dólares USD)
-- Registro de tasa de cambio histórica para reportes precisos
+👥 Gestión de Membresías: Seguimiento dinámico de estados (Activo, Vencido, Próximo a vencer) con alertas visuales y expedientes de salud.
 
-### 👥 Gestión de Membresías
-- Seguimiento dinámico de estados (Activo, Vencido, Próximo a vencer)
-- Alertas visuales automáticas
-- Expedientes de salud de socios
+📦 Control de Inventario: Gestión de suplementos y productos con alertas automáticas de stock bajo (umbral < 5 unidades).
 
-### 📦 Control de Inventario
-- Gestión de suplementos y productos
-- Alertas automáticas de stock bajo (umbral < 5 unidades)
+📊 Dashboard Administrativo: Gráficas de ingresos (Chart.js), historial de cajas para auditoría y gestión de planes.
 
-### 📊 Dashboard Administrativo
-- Gráficas de ingresos (Chart.js)
-- Historial de cajas para auditoría
-- Métricas en tiempo real
+🖨️ Tickets Térmicos: Generación de recibos de venta optimizados para impresoras de 80mm.
 
-### 🖨️ Tickets y Recibos
-- Generación de recibos de venta optimizados
-- Reimpresión de tickets
+🛠️ Tecnologías Utilizadas
+Backend: PHP 7.4+ (Programación Orientada a Objetos).
 
-### 🎨 Sistema de Temas
-- **Default** - Colores claros profesionales
-- **Oscuro** - Fondo oscuro moderno  
-- **Darkblue** - Tono azul elegante
+Base de Datos: MySQL / MariaDB.
 
----
+Frontend: HTML5, CSS3 nativo, JavaScript (AJAX para búsquedas en tiempo real).
 
-## 🛠️ Tecnologías Utilizadas
+Librerías: Chart.js para visualización de datos financieros.
 
-| Tecnología | Uso |
-|------------|-----|
-| **PHP 7.4+** | Backend (POO, PDO) |
-| **MySQL / MariaDB** | Base de datos |
-| **HTML5, CSS3** | Frontend |
-| **JavaScript** | Interactividad (AJAX) |
-| **Chart.js** | Visualización de datos |
-| **Font Awesome 6** | Iconos profesionales |
+🚀 Instalación Rápida
+Clonar/Copiar el proyecto: Coloca la carpeta del proyecto en la ruta: C:\xampp\htdocs\gym_ma.
 
----
+Preparar el Servidor: Inicia Apache y MySQL desde el Panel de Control de XAMPP.
 
-## 🚀 Instalación Rápida
+Ejecutar el Instalador: Visita http://localhost/gym_ma/instalar.php en tu navegador. El script creará automáticamente la base de datos gym_ma_db y todas sus tablas.
 
-### En XAMPP (Windows)
+[!WARNING]
+SEGURIDAD: Una vez finalizada la instalación, elimina el archivo instalar.php de tu servidor para evitar reinicios accidentales de la base de datos.
 
-1. **Preparar el Servidor**
-   - Inicia Apache y MySQL desde el Panel de Control de XAMPP
+🔑 Acceso Inicial
+Usuario: admin
 
-2. **Instalar el Proyecto**
-   - Copia la carpeta `gym_mejoras` en `C:\xampp\htdocs\`
+Contraseña: admin123
 
-3. **Ejecutar el Instalador**
-   ```
-   http://localhost/gym_mejoras/instalar.php
-   ```
-   El script creará automáticamente la base de datos `gym_ma_db` y todas sus tablas.
+📋 Flujo Operativo (Guía de Usuario)
+1. Inicio de Jornada
+El cajero debe realizar la Apertura de Caja declarando el monto inicial. El acceso al Punto de Venta permanece bloqueado hasta que se complete este paso.
 
-4. **⚠️ SEGURIDAD**
-   > Una vez finalizada la instalación, elimina el archivo `instalar.php` de tu servidor para evitar reinicios accidentales de la base de datos.
+2. Ventas y Cobros
+Planes: Busca al socio por nombre o cédula. El sistema calcula automáticamente la nueva fecha de vigencia.
 
-### En Linux (Debian/Ubuntu)
+Productos: Selecciona artículos del inventario y la cantidad; el stock se descuenta en tiempo real.
 
-```bash
-# Instalar dependencias
-sudo apt update && sudo apt upgrade -y
-sudo apt install apache2 mariadb-server php php-mysql php-cli php-zip php-curl php-xml php-mbstring unzip git -y
+Multimoneda: Permite pagos en Córdobas o Dólares, calculando el vuelto exacto según la tasa del BCN configurada.
 
-# Iniciar servicios
-sudo systemctl start apache2 mariadb
+3. Cierre de Turno
+Al finalizar, el cajero ingresa el Monto Real físico. El sistema compara esto con el Monto Esperado (Apertura + Ventas) y registra cualquier faltante o sobrante para auditoría.
 
-# Clonar proyecto
-cd /var/www/html
-sudo git clone https://github.com/tu-repositorio.git gym_ma
-sudo chown -R www-data:www-data /var/www/html/gym_ma
-sudo chmod -R 755 /var/www/html/gym_ma
+📊 Estructura de la Base de Datos
+usuarios: Roles (ADMIN/CAJA) y acceso.
 
-# Instalar
-http://localhost/gym_ma/instalar.php
-```
+socios: Datos personales, médicos y contactos de emergencia.
 
----
+ventas: Registro histórico detallado con tasa de cambio fija al momento de la venta.
 
-## 🔑 Acceso Inicial
+cajas: Control de turnos y flujos de efectivo.
 
-| Campo | Valor |
-|-------|-------|
-| **Usuario** | admin |
-| **Contraseña** | admin123 |
+inventario: Stock de productos y alertas.
 
-> ⚠️ **IMPORTANTE:** Cambia la contraseña del usuario admin inmediatamente después del primer inicio de sesión.
-
----
-
-## 📋 Flujo Operativo
-
-### 1. Inicio de Jornada
-El cajero debe realizar la **Apertura de Caja** declarando el monto inicial. El acceso al Punto de Venta permanece bloqueado hasta que se complete este paso.
-
-### 2. Ventas y Cobros
-- **Planes:** Busca al socio por nombre o cédula. El sistema calcula automáticamente la nueva fecha de vigencia.
-- **Productos:** Selecciona artículos del inventario y la cantidad; el stock se descuenta en tiempo real.
-- **Multimoneda:** Permite pagos en Córdobas o Dólares, calculando el vuelto exacto según la tasa del BCN configurada.
-
-### 3. Cierre de Turno
-Al finalizar, el cajero ingresa el **Monto Real** físico. El sistema compara esto con el **Monto Esperado** (Apertura + Ventas) y registra cualquier faltante o sobrante para auditoría.
-
----
-
-## 📊 Reportes Disponibles
-
-1. **Reporte Financiero** - Ventas por período con filtros
-2. **Ingresos/Egresos** - Balance, métodos de pago, categorías
-3. **Rendimiento Cajeros** - Ventas por empleado
-4. **Socios por Vencer** - Alertas de membresías próximas a vencer
-5. **Clientes Frecuentes** - Top clientes por número de compras
-6. **Inventario** - Stock de productos
-7. **Cajas** - Historial de cajas abiertas/cerradas
-8. **Egresos** - Registro de gastos del gym
-9. **Buscar por ID** - Encontrar ventas específicas
-
-Todos los reportes incluyen **Exportación a Excel**.
-
----
-
-## 📁 Estructura del Proyecto
-
-```
-gym_mejoras/
-├── config/
-│   ├── Database.php       # Conexión PDO
-│   └── AppConfig.php     # Configuración del gym
-├── classes/
-│   ├── Dashboard.php     # Estadísticas
-│   ├── Reporte.php       # Métodos de reportes
-│   ├── Socio.php         # Lógica de socios
-│   ├── Inventario.php   # Gestión de productos
-│   └── Plan.php         # Planes de membresía
-├── controllers/
-│   ├── AuthController.php
-│   ├── VentaController.php
-│   ├── SocioController.php
-│   ├── CajaController.php
-│   └── ExportController.php
-├── views/
-│   ├── login.php
-│   ├── dashboard.php
-│   ├── admin/           # Módulos admin
-│   ├── caja/            # Punto de venta
-│   └── includes/        # Componentes
-├── public/
-│   ├── css/estilos.css
-│   └── img/
-├── README.md
-└── instalar.php
-```
-
----
-
-## 🗄️ Tablas de la Base de Datos
-
-| Tabla | Descripción |
-|-------|-------------|
-| `usuarios` | Empleados (ADMIN/CAJA) |
-| `socios` | Clientes del gym |
-| `ventas` | Transacciones |
-| `cajas` | Sesiones de caja |
-| `inventario` | Productos |
-| `planes` | Membresías |
-| `caja_egresos` | Gastos |
-| `configuracion` | Ajustes del sistema |
-
----
-
-## 🔒 Seguridad
-
-- ✅ Contraseñas hasheadas con BCRYPT
-- ✅ Consultas preparadas (PDO) contra SQL Injection
-- ✅ Sesiones seguras con validación
-- ✅ Roles: ADMIN y CAJA
-- ✅ Validación de acceso en cada página
-
----
-
-## 💾 Respaldo y Mantenimiento
-
-- Utiliza la opción **"Respaldar Base de Datos"** en el panel de administración regularmente.
-- Mantén actualizado PHP y MySQL/MariaDB.
-- Elimina el archivo `instalar.php` después de la instalación.
-
----
-
-## 📝 Licencia
-
-Este proyecto está bajo la **Licencia MIT**.
+📄 Licencia
+Este proyecto está bajo la Licencia MIT.
 
 Copyright (c) 2026 GYM MA DB
 
+Se concede permiso por la presente, de forma gratuita, a cualquier persona que obtenga una copia de este software y de los archivos de documentación asociados, para utilizar el software sin restricción, incluyendo sin limitación los derechos a usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar y/o vender copias del Software, sujeto a que se incluya el aviso de copyright anterior en todas las copias o partes sustanciales del mismo.
+
+✉️ Soporte y Respaldo
+Backups: Utiliza la opción "Respaldar Base de Datos" en el panel de administración regularmente.
+
+Soporte: Para consultas técnicas o personalizaciones, contacta al administrador del sistema.
+
+<img width="1259" height="827" alt="image" src="https://github.com/user-attachments/assets/63bbb7ef-edc1-46ee-81ef-ec4a82591789" />
+
+<img width="1264" height="723" alt="image" src="https://github.com/user-attachments/assets/753a70e7-e68d-4779-915e-fb0256161eb4" />
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# 📖 Guía de Instalación en Debian
+
+## 1. 🔧 Preparar el entorno
+Actualiza tu sistema:
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+
+Instala Apache, PHP y MariaDB:
+```bash
+sudo apt install apache2 mariadb-server php php-mysql php-cli php-zip php-curl php-xml php-mbstring unzip git -y
+```
+
+Habilita y arranca servicios:
+```bash
+sudo systemctl enable apache2 mariadb
+sudo systemctl start apache2 mariadb
+```
+
 ---
 
-## ✉️ Soporte
+## 2. 🗄️ Configurar la base de datos
+Accede a MariaDB:
+```bash
+sudo mysql -u root -p
+```
 
-Para consultas técnicas o personalizaciones, contacta al administrador del sistema.
+Crea base de datos y usuario:
+```sql
+CREATE DATABASE gym_ma_db;
+CREATE USER 'gymuser'@'localhost' IDENTIFIED BY 'tu_password_segura';
+GRANT ALL PRIVILEGES ON gym_ma_db.* TO 'gymuser'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
 
 ---
 
-**Versión:** 2.0  
-**Desarrollado para:** GYM MA  
-**Fecha:** Marzo 2026
+## 3. 📂 Descargar el proyecto
+Clona el repositorio en el directorio web:
+```bash
+cd /var/www/html
+sudo git clone https://github.com/leninobregon/gymma.git gym_ma
+```
+
+Asegura permisos:
+```bash
+sudo chown -R www-data:www-data /var/www/html/gym_ma
+sudo chmod -R 755 /var/www/html/gym_ma
+```
+
+---
+
+## 4. ⚙️ Configurar Apache
+Crea un VirtualHost:
+```bash
+sudo nano /etc/apache2/sites-available/gym_ma.conf
+```
+
+Contenido:
+```apache
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    DocumentRoot /var/www/html/gym_ma
+    ServerName localhost
+
+    <Directory /var/www/html/gym_ma>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/gym_ma_error.log
+    CustomLog ${APACHE_LOG_DIR}/gym_ma_access.log combined
+</VirtualHost>
+```
+
+Habilita sitio y mod_rewrite:
+```bash
+sudo a2ensite gym_ma.conf
+sudo a2enmod rewrite
+sudo systemctl reload apache2
+```
+
+---
+
+## 5. 🚀 Instalación inicial
+Accede en el navegador:
+```
+http://localhost/gym_ma/instalar.php
+```
+
+- Se crearán las tablas automáticamente.  
+- Usuario inicial: **admin**  
+- Contraseña: **admin123**  
+
+⚠️ **IMPORTANTE:** elimina `instalar.php` después de la instalación:
+```bash
+sudo rm /var/www/html/gym_ma/instalar.php
+```
+
+---
+
+## 6. 🔒 Seguridad y mantenimiento
+- Cambia la contraseña del usuario `admin` inmediatamente.  
+- Realiza respaldos periódicos con la opción integrada de “Respaldar Base de Datos”.  
+- Mantén actualizado Apache, PHP y MariaDB:
+```bash
+sudo apt upgrade -y
+```
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+markdown
+# 🏋️‍♂️ Guía de Instalación de GYM MA en XAMPP (Windows)
+
+## 1. 🔧 Instalar y preparar XAMPP
+1. Descarga XAMPP desde [apachefriends.org](https://www.apachefriends.org).
+2. Durante la instalación, incluye los módulos:
+   - Apache
+   - MySQL
+   - phpMyAdmin
+3. Abre el **XAMPP Control Panel** y activa **Apache** y **MySQL**.
+
+---
+
+## 2. 🗄️ Crear la base de datos
+Accede a **phpMyAdmin** en tu navegador:
+http://localhost/phpmyadmin
+
+Código
+
+Ejecuta los siguientes comandos SQL:
+
+```sql
+CREATE DATABASE gym_ma_db;
+CREATE USER 'gymuser'@'localhost' IDENTIFIED BY 'tu_password_segura';
+GRANT ALL PRIVILEGES ON gym_ma_db.* TO 'gymuser'@'localhost';
+FLUSH PRIVILEGES;
+3. 📂 Descargar el proyecto
+Ve al directorio de proyectos de XAMPP:
+
+bash
+cd C:\xampp\htdocs
+Clona el repositorio:
+
+bash
+git clone https://github.com/leninobregon/gymma.git gym_ma
+(Si no tienes Git, descarga el ZIP desde GitHub y descomprímelo en htdocs con el nombre gym_ma)
+
+4. ⚙️ Instalación inicial
+Accede en tu navegador:
+
+Código
+http://localhost/gym_ma/instalar.php
+El instalador creará las tablas automáticamente.
+
+Credenciales iniciales:
+
+Usuario: admin
+
+Contraseña: admin123
+
+⚠️ IMPORTANTE: elimina el archivo instalar.php después de la instalación:
+
+bash
+del C:\xampp\htdocs\gym_ma\instalar.php
+5. 🌐 Configurar VirtualHost
+Edita el archivo:
+
+Código
+C:\xampp\apache\conf\extra\httpd-vhosts.conf
+Agrega esta configuración:
+
+apache
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    DocumentRoot "C:/xampp/htdocs/gym_ma"
+    ServerName gymma.local
+    ServerAlias www.gymma.local
+
+    <Directory "C:/xampp/htdocs/gym_ma">
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog "logs/gymma_error.log"
+    CustomLog "logs/gymma_access.log" combined
+</VirtualHost>
+Luego edita el archivo hosts de Windows:
+
+Código
+C:\Windows\System32\drivers\etc\hosts
+Agrega:
+
+Código
+127.0.0.1   gymma.local
+Reinicia Apache desde el panel de XAMPP.
+
+Accede al sistema:
+
+Código
+http://gymma.local
+6. 🔒 Seguridad y mantenimiento
+Cambia la contraseña del usuario admin inmediatamente.
+
+Realiza respaldos periódicos desde la opción integrada de “Respaldar Base de Datos”.
+
+Mantén XAMPP actualizado (Apache, PHP y MySQL).
+
+Configura firewall y permisos si lo usas en red local.
+
+7. 🚀 Flujo de uso del sistema
+Apertura de Caja → El cajero declara el monto inicial.
+
+Ventas y Cobros → Membresías y productos con control de stock y multimoneda.
+
+Cierre de Turno → Registro de ingresos, faltantes o sobrantes.
+
+📌 Notas finales
+Este sistema está pensado para gimnasios pequeños y medianos.
+
+Se recomienda probar primero en entorno local antes de desplegar en producción.
