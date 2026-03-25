@@ -185,6 +185,7 @@ sudo systemctl enable php-fpm
 
 ---
 
-<img width="1259" height="827" alt="Dashboard" src="https://github.com/user-attachments/assets/63bbb7ef-edc1-46ee-81ef-ec4a82591789" />
+<img width="980" height="733" alt="image" src="https://github.com/user-attachments/assets/4e47904d-314c-4da2-80d1-16c3070960df" />
 
-<img width="1264" height="723" alt="Sistema" src="https://github.com/user-attachments/assets/753a70e7-e68d-4779-915e-fb0256161eb4" />
+
+<img width="1177" height="839" alt="image" src="https://github.com/user-attachments/assets/9f87e014-e7f6-4258-b01d-fe2829f8293d" />
