@@ -34,15 +34,6 @@ try {
     $pdo->exec("USE `$db_name`;");
     echo "<p style='color:#4ecca3;'>✅ Base de datos <b>$db_name</b> creada.</p>";
 
-    $pdo->exec("DROP TABLE IF EXISTS caja_egresos");
-    $pdo->exec("DROP TABLE IF EXISTS ventas");
-    $pdo->exec("DROP TABLE IF EXISTS socios");
-    $pdo->exec("DROP TABLE IF EXISTS cajas");
-    $pdo->exec("DROP TABLE IF EXISTS inventario");
-    $pdo->exec("DROP TABLE IF EXISTS planes");
-    $pdo->exec("DROP TABLE IF EXISTS usuarios");
-    $pdo->exec("DROP TABLE IF EXISTS configuracion");
-
     $sql = "
     CREATE TABLE `configuracion` (
       `id` int(11) NOT NULL DEFAULT 1,
@@ -65,6 +56,8 @@ try {
       `usuario` varchar(50) NOT NULL UNIQUE,
       `cedula` varchar(20) NOT NULL UNIQUE,
       `password` varchar(255) NOT NULL,
+      `two_factor_pin` varchar(10) DEFAULT NULL,
+      `two_factor_enabled` tinyint(1) DEFAULT 0,
       `telefono` varchar(20) DEFAULT NULL,
       `rol` enum('ADMIN','CAJA') NOT NULL DEFAULT 'CAJA',
       `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp()

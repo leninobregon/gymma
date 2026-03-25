@@ -106,6 +106,7 @@ $tema = $_SESSION['tema'] ?? 'default';
                     <tr>
                         <th>NOMBRE COMPLETO</th>
                         <th>USUARIO (ALIAS)</th>
+                        <th>2FA</th>
                         <th>ROL</th>
                         <th>CÉDULA</th>
                         <th style="text-align: center;">ACCIONES</th>
@@ -116,6 +117,13 @@ $tema = $_SESSION['tema'] ?? 'default';
                     <tr>
                         <td><strong><?php echo strtoupper($row['nombre'] . " " . $row['apellido']); ?></strong></td>
                         <td><code style="background:#f0f0f0; padding:2px 5px; border-radius:4px;"><?php echo $row['usuario']; ?></code></td>
+                        <td style="text-align: center;">
+                            <?php if(!empty($row['two_factor_enabled'])): ?>
+                                <span style="color:#27ae60; font-weight:bold;"><i class="fas fa-shield-alt"></i> ACTIVO</span>
+                            <?php else: ?>
+                                <span style="color:#95a5a6;"><i class="fas fa-shield-alt"></i> OFF</span>
+                            <?php endif; ?>
+                        </td>
                         <td>
                             <span style="font-size:11px; font-weight:bold; color: <?= $row['rol'] == 'ADMIN' ? '#e67e22' : '#2980b9' ?>">
                                 <?= $row['rol'] ?>

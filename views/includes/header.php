@@ -43,6 +43,9 @@ $tema_class = ($_SESSION['tema'] !== 'default') ? 'tema-' . $_SESSION['tema'] : 
         <h2 style="margin:0; font-size:1rem;"><?php echo $config['nombre_gym']; ?></h2>
     </div>
     <div style="display:flex; align-items:center; gap:15px;">
+        <a href="../configurar_2fa.php" class="btn-accion" style="background:#6c757d;" title="Configurar 2FA">
+            <i class="fas fa-shield-halved"></i>
+        </a>
         <span style="font-size:0.8rem;"><i class="fas fa-user"></i> <?php echo strtoupper($_SESSION['usuario'] ?? ''); ?></span>
         <a href="../../controllers/AuthController.php?logout=1" class="btn-logout">Salir</a>
     </div>

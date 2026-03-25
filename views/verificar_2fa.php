@@ -7,7 +7,6 @@ $db = (new Database())->getConnection();
 $config = (new AppConfig($db))->obtenerConfig();
 
 $tema = $config['tema'] ?? 'default';
-$_SESSION['tema'] = $tema;
 
 if ($tema === 'oscuro') {
     $bg = 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)';
@@ -26,17 +25,19 @@ if ($tema === 'oscuro') {
     $border = '#667eea';
 }
 
-if (isset($_SESSION['user_id'])) {
-    header("Location: dashboard.php");
+if (!isset($_SESSION['pending_2fa'])) {
+    header("Location: login.php");
     exit();
 }
+
+$error = isset($_GET['error']) ? "PIN incorrecto. Intenta de nuevo." : "";
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acceso | <?php echo $config['nombre_gym']; ?></title>
+    <title>Verificar PIN - <?php echo $config['nombre_gym']; ?></title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -48,7 +49,7 @@ if (isset($_SESSION['user_id'])) {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             padding: 20px;
         }
-        .login-container {
+        .container {
             background: <?php echo $card; ?>;
             width: 100%;
             max-width: 400px;
@@ -56,16 +57,16 @@ if (isset($_SESSION['user_id'])) {
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             overflow: hidden;
         }
-        .login-header {
+        .header {
             background: <?php echo $border; ?>;
             color: white;
             padding: 30px 20px;
             text-align: center;
         }
-        .login-header h1 { font-size: 1.5rem; font-weight: 700; }
-        .login-header p { font-size: 0.9rem; opacity: 0.9; margin-top: 5px; }
+        .header h1 { font-size: 1.5rem; font-weight: 700; }
+        .header p { font-size: 0.9rem; opacity: 0.9; margin-top: 5px; }
         
-        .login-body { padding: 30px; }
+        .body { padding: 30px; }
         
         .input-group { margin-bottom: 20px; }
         .input-group label {
@@ -74,28 +75,27 @@ if (isset($_SESSION['user_id'])) {
             font-weight: 600;
             color: <?php echo $text; ?>;
             font-size: 0.85rem;
+            text-align: center;
         }
         .input-group input {
             width: 100%;
             padding: 14px;
             border: 2px solid #e0e0e0;
             border-radius: 10px;
-            font-size: 1rem;
-            transition: all 0.3s;
+            font-size: 1.5rem;
+            text-align: center;
+            letter-spacing: 8px;
             background: transparent;
             color: <?php echo $text; ?>;
         }
         .input-group input:focus {
             border-color: <?php echo $border; ?>;
             outline: none;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
         }
         
-        .btn-login {
+        .btn {
             width: 100%;
             padding: 15px;
-            background: <?php echo $border; ?>;
-            color: white;
             border: none;
             border-radius: 10px;
             font-size: 1rem;
@@ -104,8 +104,21 @@ if (isset($_SESSION['user_id'])) {
             transition: all 0.3s;
             text-transform: uppercase;
             letter-spacing: 1px;
+            margin-bottom: 10px;
         }
-        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+        .btn-primary {
+            background: <?php echo $border; ?>;
+            color: white;
+        }
+        .btn-primary:hover { transform: translateY(-2px); }
+        
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
         
         .alert-error {
             background: #fee;
@@ -115,52 +128,39 @@ if (isset($_SESSION['user_id'])) {
             margin-bottom: 20px;
             border-left: 4px solid #c00;
             font-size: 0.9rem;
-        }
-        
-        .login-footer {
             text-align: center;
-            padding: 20px;
-            border-top: 1px solid #eee;
-            color: <?php echo $text; ?>;
-            opacity: 0.7;
-            font-size: 0.8rem;
         }
     </style>
 </head>
 <body>
 
-<div class="login-container">
-    <div class="login-header">
-        <h1>🏋️ <?php echo $config['nombre_gym']; ?></h1>
-        <p>Sistema de Gestión</p>
+<div class="container">
+    <div class="header">
+        <h1>🔐 Verificar PIN</h1>
+        <p>Ingresa tu PIN de seguridad</p>
     </div>
     
-    <div class="login-body">
-        <?php if(isset($_GET['error'])): ?>
+    <div class="body">
+        <?php if($error): ?>
             <div class="alert-error">
-                ⚠️ Usuario o contraseña incorrectos
+                ⚠️ <?php echo $error; ?>
             </div>
         <?php endif; ?>
 
-        <form action="../controllers/AuthController.php" method="POST">
+        <form method="POST" action="../controllers/AuthController.php">
             <div class="input-group">
-                <label>👤 USUARIO</label>
-                <input type="text" name="usuario" placeholder="Ingrese su usuario" required autofocus>
+                <label>🔑 PIN (4-6 dígitos)</label>
+                <input type="password" name="codigo_2fa" placeholder="••••" maxlength="6" required autofocus>
             </div>
 
-            <div class="input-group">
-                <label>🔒 CONTRASEÑA</label>
-                <input type="password" name="password" placeholder="••••••••" required>
-            </div>
-
-            <button type="submit" name="btn_login" class="btn-login">
-                ➡️ INGRESAR
+            <button type="submit" name="btn_verificar_2fa" class="btn btn-primary">
+                ✅ VERIFICAR
             </button>
+            
+            <a href="../controllers/AuthController.php?logout=1" class="btn btn-cancel">
+                ⬅️ CANCELAR
+            </a>
         </form>
-    </div>
-    
-    <div class="login-footer">
-        © <?php echo date('Y'); ?> GYM MA DB v2.0
     </div>
 </div>
 

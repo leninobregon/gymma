@@ -8,7 +8,9 @@ class Usuario {
     }
 
     public function login($usuario, $password) {
-        $query = "SELECT * FROM " . $this->table_name . " WHERE usuario = ? LIMIT 1";
+        $query = "SELECT id, nombre, apellido, usuario, cedula, password, telefono, rol, fecha_creacion, 
+                  IFNULL(two_factor_enabled, 0) as two_factor_enabled, two_factor_secret 
+                  FROM " . $this->table_name . " WHERE usuario = ? LIMIT 1";
         $stmt = $this->conn->prepare($query);
         $stmt->execute([$usuario]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);

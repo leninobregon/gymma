@@ -436,6 +436,9 @@ foreach($graf as $d) {
                 <div class="user-avatar"><?php echo strtoupper(substr($_SESSION['usuario'], 0, 1)); ?></div>
                 <span><?php echo strtoupper($_SESSION['usuario']); ?></span>
             </div>
+            <a href="configurar_2fa.php" class="btn-logout" style="background: #6c757d;" title="Configurar 2FA">
+                <i class="fas fa-shield-halved"></i>
+            </a>
             <a href="logout.php" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Salir</a>
         </div>
     </header>
