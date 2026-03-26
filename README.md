@@ -187,6 +187,37 @@ sudo systemctl reload apache2
 # Si hay errores, usar:
 sudo a2ensite gym_ma.conf --force
 sudo systemctl restart apache2
+
+### 🛠️ Solución de Problemas
+
+#### Página por defecto de Apache
+Si carga la página por defecto de Debian:
+
+```bash
+# Deshabilitar página por defecto
+sudo a2dissite 000-default.conf
+
+# Verificar configuración
+sudo apache2ctl configtest
+
+# Reiniciar Apache
+sudo systemctl restart apache2
+```
+
+#### Permisos
+```bash
+# Permisos correctos
+sudo chown -R www-data:www-data /var/www/html/gym_ma
+sudo chmod -R 755 /var/www/html/gym_ma
+
+# Carpeta tmp
+sudo chmod 777 /var/www/html/gym_ma/tmp
+```
+
+#### Ver logs
+```bash
+sudo tail -f /var/log/apache2/gym_ma_error.log
+```
 ```
 
 ### 🌐 Linux (Debian/Ubuntu) con LEMP
