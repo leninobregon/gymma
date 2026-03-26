@@ -249,14 +249,24 @@ sudo tail -f /var/log/php*-fpm.log
 Si aparece Error 500:
 
 ```bash
-# 1. Instalar extensiones PHP necesarias (importante!)
-# Verificar versión de PHP:
+# 1. Verificar versión de PHP (importante!)
 php -v
-# Según la versión:
-sudo apt install php*-mysql php*-zip php*-curl php*-xml php*-mbstring -y
 
-# Ejemplo para PHP 8.1:
-sudo apt install php8.1-mysql php8.1-zip php8.1-curl php8.1-xml php8.1-mbstring -y
+# 2. Instalar extensiones PHP según tu versión
+# PHP 8.2:
+sudo apt install php8.2-mysql php8.2-zip php8.2-curl php8.2-xml php8.2-mbstring -y
+
+# PHP 8.1:
+# sudo apt install php8.1-mysql php8.1-zip php8.1-curl php8.1-xml php8.1-mbstring -y
+
+# PHP 8.0:
+# sudo apt install php8.0-mysql php8.0-zip php8.0-curl php8.0-xml php8.0-mbstring -y
+
+# PHP 7.4:
+# sudo apt install php7.4-mysql php7.4-zip php7.4-curl php7.4-xml php7.4-mbstring -y
+
+# 3. Reiniciar Apache
+sudo systemctl restart apache2
 
 # 2. Ver logs de errores específicos
 sudo tail -100 /var/log/apache2/error.log | grep -i error
