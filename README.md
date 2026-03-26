@@ -183,20 +183,49 @@ sudo nano /etc/apache2/sites-available/gym_ma.conf
 sudo a2ensite gym_ma.conf
 sudo a2enmod rewrite
 sudo systemctl reload apache2
+
+# Si hay errores, usar:
+sudo a2ensite gym_ma.conf --force
+sudo systemctl restart apache2
 ```
 
 ### 🌐 Linux (Debian/Ubuntu) con LEMP
 
 ```bash
 # Instalar LEMP
-sudo apt install nginx mariadb-server php-fpm php-mysql php-cli php-zip php-curl php-xml php-mbstring -y
+sudo apt install nginx mariadb-server php-fpm php-mysql -y
 
-# Configurar PHP-FPM
-sudo systemctl start php-fpm
-sudo systemctl enable php-fpm
+# Configurar Nginx
+sudo nano /etc/nginx/sites-available/gym_ma
+```
 
-# Configurar Nginx igual que Apache pero con configuración PHP-FPM
-# (Ver docs/INSTALL.md para detalles completos)
+```nginx
+server {
+    listen 80;
+    server_name gym_ma.local;
+    root /var/www/html/gym_ma;
+    index index.php index.html;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_pass unix:/run/php/php-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}
+```
+
+```bash
+# Habilitar sitio
+sudo ln -s /etc/nginx/sites-available/gym_ma /etc/nginx/sites-enabled/
+sudo systemctl reload nginx
 ```
 
 ---
