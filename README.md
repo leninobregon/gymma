@@ -383,7 +383,6 @@ sudo systemctl reload nginx
 
 ---
 
-<img width="980" height="733" alt="image" src="https://github.com/user-attachments/assets/4e47904d-314c-4da2-80d1-16c3070960df" />
+<img width="626" height="736" alt="image" src="https://github.com/user-attachments/assets/b6b9f961-bad5-4a08-a881-5059c17974bc" />
 
 
-<img width="1177" height="839" alt="image" src="https://github.com/user-attachments/assets/9f87e014-e7f6-4258-b01d-fe2829f8293d" />
