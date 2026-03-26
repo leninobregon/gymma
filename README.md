@@ -145,11 +145,14 @@ sudo systemctl start apache2 mariadb
 
 # Configurar MariaDB
 sudo mysql -u root -p
-CREATE DATABASE gym_ma_db;
-CREATE USER 'gymuser'@'localhost' IDENTIFIED BY 'tu_password';
+CREATE DATABASE gym_ma_db CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE USER 'gymuser'@'localhost' IDENTIFIED BY 'gymuser';
 GRANT ALL PRIVILEGES ON gym_ma_db.* TO 'gymuser'@'localhost';
 FLUSH PRIVILEGES;
 EXIT;
+
+# Actualizar config/database.php con las credenciales
+# o ejecutar el instalador: http://tu-servidor/instalar.php
 
 # Descargar proyecto
 cd /var/www/html
