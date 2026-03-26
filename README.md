@@ -274,6 +274,53 @@ php -m | grep -E "pdo|mysql|zip|curl"
 # 5. Si siguen los errores, ver logs específicos
 sudo tail -50 /var/log/apache2/error.log | grep -i "auth\|php\|fatal"
 
+## ⚠️ Error 500 - Base de Datos
+
+Si sale Error 500, puede que la base de datos no existe:
+
+```bash
+# Verificar MySQL/MariaDB
+sudo systemctl status mariadb
+sudo systemctl status mysql
+
+# Si no está corriendo, iniciar
+sudo systemctl start mariadb
+sudo systemctl enable mariadb
+
+# Crear base de datos
+sudo mysql -u root -p
+CREATE DATABASE gym_ma_db CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+EXIT;
+
+# Importar tablas (opcional - el instalador lo hace automáticamente)
+sudo mysql -u root -p gym_ma_db < /var/www/html/gym_ma/db/gym_ma_db.sql
+
+# O ejecutar el instalador en el navegador:
+# http://tu-servidor/instalar.php
+```
+
+### Credenciales de la Base de Datos
+
+El archivo `config/Database.php` usa:
+- Usuario: `root`
+- Contraseña: (vacía)
+- Base de datos: `gym_ma_db`
+
+Si necesitas un usuario específico:
+```sql
+sudo mysql -u root -p
+CREATE USER 'gymuser'@'localhost' IDENTIFIED BY 'gymuser';
+GRANT ALL PRIVILEGES ON gym_ma_db.* TO 'gymuser'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+Luego edita `config/Database.php`:
+```php
+private $username = "gymuser";
+private $password = "gymuser";
+```
+
 # 2. Ver logs de errores específicos
 sudo tail -100 /var/log/apache2/error.log | grep -i error
 
