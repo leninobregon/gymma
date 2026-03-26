@@ -236,30 +236,43 @@ sudo chmod 777 /var/www/html/gym_ma/tmp
 
 #### Ver logs
 ```bash
-sudo tail -f /var/log/apache2/gym_ma_error.log
+# Logs de Apache
+sudo tail -f /var/log/apache2/error.log
+
+# Logs de PHP
+sudo tail -f /var/log/php*-fpm.log
+
+# Accede al sitio para generar el error y revisa los logs
 ```
 
 #### HTTP Error 500
 Si aparece Error 500:
 
 ```bash
-# 1. Ver logs de Apache
-sudo tail -f /var/log/apache2/error.log
+# 1. Instalar extensiones PHP necesarias (importante!)
+# Verificar versión de PHP:
+php -v
+# Según la versión:
+sudo apt install php*-mysql php*-zip php*-curl php*-xml php*-mbstring -y
 
-# 2. Habilitar mostrar errores en PHP
+# Ejemplo para PHP 8.1:
+sudo apt install php8.1-mysql php8.1-zip php8.1-curl php8.1-xml php8.1-mbstring -y
+
+# 2. Ver logs de errores específicos
+sudo tail -100 /var/log/apache2/error.log | grep -i error
+
+# 3. Habilitar mostrar errores temporalmente
 sudo nano /etc/php/8.1/apache2/php.ini
-# Cambiar:
-display_errors = Off
-# Por:
-display_errors = On
+# Cambiar: display_errors = Off
+# Por:     display_errors = On
 
-# 3. Reiniciar Apache
+# 4. Reiniciar Apache
 sudo systemctl restart apache2
 
-# 4. Verificar extensiones PHP necesarias
-sudo apt install php-mysql php-zip php-curl php-xml php-mbstring -y
+# 5. Ver logs ahora
+sudo tail -f /var/log/apache2/error.log
 
-# 5. Permisos correctos
+# 6. Permisos correctos
 sudo chown -R www-data:www-data /var/www/html/gym_ma
 sudo find /var/www/html/gym_ma -type f -exec chmod 644 {} \;
 sudo find /var/www/html/gym_ma -type d -exec chmod 755 {} \;
