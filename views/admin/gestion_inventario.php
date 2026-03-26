@@ -17,7 +17,8 @@ $invObj = new Inventario($db);
 $productos = $invObj->leerTodo();
 
 // Tasa de cambio para cálculos rápidos
-$tasa = $config['tasa_cambio'] ?? 36.65;
+$simbolo = $config['moneda_simbolo'] ?? 'C$';
+$tasa = $config['tasa_cambio'] ?? $config['tipo_cambio_bcn'] ?? 36.65;
 $tema = $_SESSION['tema'] ?? 'default';
 
 $msj = $_GET['msj'] ?? '';
@@ -38,7 +39,7 @@ $error = $_GET['error'] ?? '';
     <header>
         <div class="logo"><h2><i class="fas fa-warehouse"></i> Gestión de Inventario</h2></div>
         <div style="display:flex; align-items:center; gap:15px;">
-            <span class="tasa-flotante">Tasa: C$ <?php echo number_format($tasa, 2); ?></span>
+            <span class="tasa-flotante">Tasa: <?php echo $simbolo; ?> <?php echo number_format($tasa, 2); ?></span>
             <a href="../dashboard.php" class="btn-volver gris">← Volver</a>
         </div>
     </header>
@@ -61,7 +62,7 @@ $error = $_GET['error'] ?? '';
                     <input type="text" name="descripcion" placeholder="Descripción (ej: Proteína Whey)" required style="padding:10px; border:1px solid #ddd; border-radius:8px;">
                     
                     <div style="position:relative;">
-                        <input type="number" step="0.01" name="precio" id="precio_new" placeholder="Precio (C$)" required style="padding:10px; border:1px solid #ddd; border-radius:8px; width:100%;">
+                        <input type="number" step="0.01" name="precio" id="precio_new" placeholder="Precio (<?php echo $simbolo; ?>)" required style="padding:10px; border:1px solid #ddd; border-radius:8px; width:100%;">
                         <small id="ref_usd_new" style="color:#27ae60; font-weight:bold; position:absolute; bottom:-18px; left:5px; font-size:10px;">Ref: $ 0.00</small>
                     </div>
 
@@ -86,7 +87,7 @@ $error = $_GET['error'] ?? '';
                 <thead>
                     <tr style="background: #f8f9fa; color: #7f8c8d; text-align: left; border-bottom: 2px solid #eee;">
                         <th style="padding: 15px;">DESCRIPCIÓN</th>
-                        <th style="padding: 15px;">PRECIO (C$)</th>
+                        <th style="padding: 15px;">PRECIO (<?php echo $simbolo; ?>)</th>
                         <th style="padding: 15px;">REF (USD)</th>
                         <th style="padding: 15px;">STOCK</th>
                         <th style="padding: 15px; text-align: center;">ACCIONES</th>
@@ -99,7 +100,7 @@ $error = $_GET['error'] ?? '';
                             <strong><?php echo strtoupper($prod['descripcion']); ?></strong>
                         </td>
                         <td style="padding: 15px; font-weight:bold;">
-                            C$ <?php echo number_format($prod['precio'], 2); ?>
+                            <?php echo $simbolo; ?> <?php echo number_format($prod['precio'], 2); ?>
                         </td>
                         <td style="padding: 15px;">
                             <span class="badge-usd">$ <?php echo number_format($prod['precio'] / $tasa, 2); ?></span>

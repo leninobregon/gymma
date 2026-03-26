@@ -4,16 +4,49 @@ if (!isset($_SESSION['user_id'])) { header("Location: ../login.php"); exit(); }
 
 $tema = $_SESSION['tema'] ?? 'default';
 require_once "../../config/Database.php";
+require_once "../../config/AppConfig.php";
 $db = (new Database())->getConnection();
+$config_app = (new AppConfig($db))->obtenerConfig();
+
+$moneda_iso = $config_app['moneda_iso'] ?? 'NIO';
+
+// Colores según la moneda configurada
+$colores_monado = [
+    'NIO' => '#0984e3',
+    'USD' => '#27ae60',
+    'EUR' => '#8e44ad',
+    'GBP' => '#e74c3c',
+    'MXN' => '#16a085',
+    'CRC' => '#f39c12',
+    'GTQ' => '#d35400',
+    'HNL' => '#3498db',
+    'JPY' => '#e91e63',
+    'CNY' => '#ff5722',
+    'BRL' => '#009688',
+    'CAD' => '#c0392b',
+    'AUD' => '#1abc9c',
+    'CHF' => '#34495e',
+    'PEN' => '#f1c40f',
+    'CLP' => '#3498db',
+    'COP' => '#e67e22',
+    'ARS' => '#9b59b6',
+    'VES' => '#e74c3c',
+    'INR' => '#ff9800',
+    'KRW' => '#9c27b0',
+    'SVC' => '#607d8b'
+];
+$color_monedag = $colores_monado[$moneda_iso] ?? '#0984e3';
+
+$color_texto = in_array($tema, ['oscuro', 'darkblue']) ? '#fff' : '#2d3436';
 
 // 0. CONFIGURACIÓN MULTIMONEDA
-$moneda_usuario = $_SESSION['moneda'] ?? 'COR'; // COR o USD
-$tasa_dolar = 36.65; 
-$simbolo = ($moneda_usuario === 'USD') ? '$' : 'C$';
+$moneda_usuario = $moneda_iso === 'USD' ? 'USD' : 'COR';
+$tasa_dolar = $config_app['tipo_cambio_bcn'] ?? 36.65; 
+$simbolo = $config_app['moneda_simbolo'] ?? 'C$';
 
-// Función para mostrar montos convertidos en la interfaz
-function mostrarMonto($monto, $moneda, $tasa) {
-    return ($moneda === 'USD') ? $monto / $tasa : $monto;
+// Función simple - retorna el monto tal cual
+function mostrarMonto($monto) {
+    return $monto;
 }
 
 // 1. VALIDACIÓN DE CAJA ACTIVA
@@ -29,6 +62,12 @@ $_SESSION['id_caja'] = $cajaActual['id'];
 
 // 2. CARGA DE DATOS
 $config = $db->query("SELECT * FROM configuracion LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+
+// Usar valores directos de la DB, ignorar los defaults
+$simbolo = $config['moneda_simbolo'];
+$moneda_iso = $config['moneda_iso'];
+$tasa_dolar = $config['tipo_cambio_bcn'];
+$color_monedag = $colores_monado[$moneda_iso] ?? '#0984e3';
 $planes = $db->query("SELECT id, nombre_plan, precio FROM planes WHERE estado = 'ACTIVO'")->fetchAll(PDO::FETCH_ASSOC);
 $productos = $db->query("SELECT id, descripcion, precio, cantidad FROM inventario WHERE cantidad > 0")->fetchAll(PDO::FETCH_ASSOC);
 
@@ -36,7 +75,7 @@ $productos = $db->query("SELECT id, descripcion, precio, cantidad FROM inventari
 $stmtTotal = $db->prepare("SELECT SUM(monto_total) as total FROM ventas WHERE id_caja = ? AND estado != 'ANULADO'");
 $stmtTotal->execute([$_SESSION['id_caja']]);
 $recaudadoCords = $stmtTotal->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
-$recaudadoTurno = mostrarMonto($recaudadoCords, $moneda_usuario, $tasa_dolar);
+$recaudadoTurno = $recaudadoCords;
 
 $ultimo_id = null;
 if(isset($_GET['res'])) {
@@ -77,11 +116,11 @@ if(isset($_GET['res'])) {
     <header class="recaudado-header">
         <div style="display:flex; align-items:center; gap:15px;">
             <span style="font-size: 1.8rem;"><i class="fas fa-cash-register"></i></span>
-            <h2 style="margin:0; font-size: 1.2rem;">CAJA ACTIVA #<?php echo $_SESSION['id_caja']; ?></h2>
+            <h2 style="margin:0; font-size: 1.2rem; color:<?php echo $color_monedag; ?>; font-weight:bold;">PUNTO DE VENTA</h2>
         </div>
         <div style="text-align: right; display: flex; align-items: center; gap: 20px;">
             <div>
-                <small style="display:block; font-size: 0.65rem; opacity: 0.8; text-transform: uppercase;">Recaudado (<?php echo $moneda_usuario; ?>)</small>
+                <small style="display:block; font-size: 0.65rem; opacity: 0.8; text-transform: uppercase;">Recaudado</small>
                 <span class="monto-total"><?php echo $simbolo . " " . number_format($recaudadoTurno, 2); ?></span>
             </div>
             <a href="../dashboard.php" class="btn-volver gris"><i class="fas fa-home"></i> Dashboard</a>
@@ -92,7 +131,7 @@ if(isset($_GET['res'])) {
         <?php if($ultimo_id): ?>
             <div style="background: #e6fffa; color: #27ae60; padding: 15px; margin: 20px; border-left: 5px solid #27ae60; display: flex; justify-content: space-between; align-items: center;">
                 <span><i class="fas fa-check-circle" style="color:#27ae60;"></i> Venta <b>#<?php echo $ultimo_id; ?></b> procesada con éxito.</span>
-                <button onclick="reimprimir(<?php echo $ultimo_id; ?>)" style="background:#0984e3; color:white; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; font-weight:bold;"><i class="fas fa-print"></i> IMPRIMIR TICKET</button>
+                <button onclick="reimprimir(<?php echo $ultimo_id; ?>)" style="background:<?php echo $color_monedag; ?>; color:white; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; font-weight:bold;"><i class="fas fa-print"></i> IMPRIMIR TICKET</button>
             </div>
         <?php endif; ?>
 
@@ -127,7 +166,7 @@ if(isset($_GET['res'])) {
                             <label class="font-negra">SELECCIONAR PRODUCTO</label>
                             <select name="id_producto" id="select_prod" onchange="actualizarCalculos()">
                                 <?php foreach($productos as $p): 
-                                    $p_vista = mostrarMonto($p['precio'], $moneda_usuario, $tasa_dolar);
+                                    $p_vista = $p['precio'];
                                 ?>
                                     <option value="<?=$p['id']?>" data-precio-cords="<?=$p['precio']?>"><?=$p['descripcion']?> (<?=$simbolo?> <?=number_format($p_vista, 2)?>)</option>
                                 <?php endforeach; ?>
@@ -140,7 +179,7 @@ if(isset($_GET['res'])) {
                             <label class="font-negra">MEMBRESÍA</label>
                             <select name="id_plan" id="select_plan" onchange="actualizarCalculos()">
                                 <?php foreach($planes as $pl): 
-                                    $pl_vista = mostrarMonto($pl['precio'], $moneda_usuario, $tasa_dolar);
+                                    $pl_vista = $pl['precio'];
                                 ?>
                                     <option value="<?=$pl['id']?>" data-precio-cords="<?=$pl['precio']?>"><?=$pl['nombre_plan']?> (<?=$simbolo?> <?=number_format($pl_vista, 2)?>)</option>
                                 <?php endforeach; ?>
@@ -154,9 +193,18 @@ if(isset($_GET['res'])) {
                         <label class="label-calc">PAGO RECIBIDO:</label>
                         <div style="display:flex; gap:5px; margin-bottom:15px;">
                             <input type="number" id="pago_cajero" placeholder="0.00" onkeyup="calcularVuelto()" style="margin:0;">
-                            <select id="moneda_pago" onchange="calcularVuelto()" style="width:70px; margin:0;">
-                                <option value="COR">C$</option>
-                                <option value="USD">$</option>
+                            <select id="moneda_pago" onchange="calcularVuelto()" style="width:80px; margin:0;">
+                                <option value="NIO" <?= ($moneda_iso == 'NIO') ? 'selected' : '' ?>>C$</option>
+                                <option value="USD" <?= ($moneda_iso == 'USD') ? 'selected' : '' ?>>$</option>
+                                <option value="EUR" <?= ($moneda_iso == 'EUR') ? 'selected' : '' ?>>€</option>
+                                <option value="GBP" <?= ($moneda_iso == 'GBP') ? 'selected' : '' ?>>£</option>
+                                <option value="MXN" <?= ($moneda_iso == 'MXN') ? 'selected' : '' ?>>$MX</option>
+                                <option value="GTQ" <?= ($moneda_iso == 'GTQ') ? 'selected' : '' ?>>Q</option>
+                                <option value="HNL" <?= ($moneda_iso == 'HNL') ? 'selected' : '' ?>>L</option>
+                                <option value="CRC" <?= ($moneda_iso == 'CRC') ? 'selected' : '' ?>>₡</option>
+                                <option value="COP" <?= ($moneda_iso == 'COP') ? 'selected' : '' ?>>$CO</option>
+                                <option value="JPY" <?= ($moneda_iso == 'JPY') ? 'selected' : '' ?>>¥</option>
+                                <option value="BRL" <?= ($moneda_iso == 'BRL') ? 'selected' : '' ?>>R$</option>
                             </select>
                         </div>
                         
@@ -164,7 +212,7 @@ if(isset($_GET['res'])) {
                             <span class="label-calc" style="color:#7f8c8d !important;">TOTAL A PAGAR</span>
                             <div id="total_mostrar" style="font-size:1.8rem; font-weight:800; color:#2d3436;"><?=$simbolo?> 0.00</div>
                             <hr style="margin:10px 0; border:0; border-top:1px solid #eee;">
-                            <span class="label-calc" style="color:#7f8c8d !important;">SU VUELTO EN <?=$moneda_usuario?></span>
+                            <span class="label-calc" style="color:#7f8c8d !important;">SU VUELTO EN <?=$simbolo?></span>
                             <span id="vuelto_txt" class="vuelto-txt"><?=$simbolo?> 0.00</span>
                         </div>
                     </div>
@@ -179,13 +227,13 @@ if(isset($_GET['res'])) {
                             $stmtH = $db->prepare("SELECT id, concepto, monto_total FROM ventas WHERE id_caja = ? AND estado != 'ANULADO' ORDER BY id DESC LIMIT 5");
                             $stmtH->execute([$_SESSION['id_caja']]);
                             while($v = $stmtH->fetch()): 
-                                $v_vista = mostrarMonto($v['monto_total'], $moneda_usuario, $tasa_dolar);
+                                $v_vista = $v['monto_total'];
                             ?>
                             <tr>
                                 <td style="color:#e67e22;">#<?=$v['id']?></td>
                                 <td><?=$v['concepto']?></td>
                                 <td style="text-align:right; color:#27ae60;"><?=$simbolo?> <?=number_format($v_vista, 2)?></td>
-                                <td style="text-align:center;"><button onclick="reimprimir(<?=$v['id']?>)" style="cursor:pointer; border:1px solid #ddd; background:white; padding:4px 8px; border-radius:4px;"><i class="fas fa-print"></i></button></td>
+                                <td style="text-align:center;"><button onclick="reimprimir(<?=$v['id']?>)" title="Imprimir ticket" style="cursor:pointer; background:<?=$color_monedag?>; color:white; border:none; padding:6px 12px; border-radius:4px;"><i class="fas fa-print"></i></button></td>
                             </tr>
                             <?php endwhile; ?>
                         </tbody>
@@ -197,7 +245,7 @@ if(isset($_GET['res'])) {
 
     <script>
     const TASA_DOLAR = <?=$tasa_dolar?>;
-    const MONEDA_SESION = "<?=$moneda_usuario?>";
+    const MONEDA_SESION = "<?=$moneda_iso?>";
     const SIMBOLO = "<?=$simbolo?>";
     let socioEstatus = "";
 
@@ -248,19 +296,44 @@ if(isset($_GET['res'])) {
     }
 
     function calcularVuelto() {
-        // Total en la moneda que se está mostrando
         let totalVista = parseFloat(document.getElementById('total_mostrar').innerText.replace(SIMBOLO + ' ', '')) || 0;
         let pagoRecibido = parseFloat(document.getElementById('pago_cajero').value) || 0;
         let monedaPagoRecibido = document.getElementById('moneda_pago').value;
+        
+        // Tasas de cambio según Córdoba Nicaragüense (NIO) - puedes actualizar estas tasas periódicamente
+        const tasas = {
+            'NIO': 1,           // Córdoba Nicaragüense
+            'USD': 36.65,       // Dólar estadounidense
+            'EUR': 39.50,       // Euro
+            'GBP': 46.50,       // Libra Esterlina
+            'MXN': 1.85,        // Peso Mexicano
+            'GTQ': 8.15,        // Quetzal Guatemalteco
+            'HNL': 8.15,        // Lempira Hondureña
+            'CRC': 0.24,        // Colón Costarricense
+            'COP': 3.35,        // Peso Colombiano
+            'SVC': 36.65,       // Dólar Salvadoreño
+            'PEN': 3.85,        // Sol Peruano
+            'BRL': 7.30,        // Real Brasileño
+            'JPY': 0.24,        // Yen Japonés
+            'CNY': 5.10,        // Yuan Chino
+            'KRW': 0.028,       // Won Coreano
+            'INR': 0.44,        // Rupia India
+            'CAD': 27.10,       // Dólar Canadiense
+            'AUD': 23.70,       // Dólar Australiano
+            'CHF': 41.40,       // Franco Suizo
+            'CLP': 0.039,       // Peso Chileno
+            'ARS': 0.043,       // Peso Argentino
+            'VES': 1.02,        // Bolívar Venezolano
+            'SAR': 9.77,        // Riyal Saudí
+            'AED': 9.98,        // Dirham EAU
+            'CAD': 27.10        // Dólar Canadiense
+        };
 
-        let pagoNormalizado = 0;
-
-        // Convertimos el pago recibido a la moneda de la vista para restar
-        if (MONEDA_SESION === 'COR') {
-            pagoNormalizado = (monedaPagoRecibido === 'USD') ? pagoRecibido * TASA_DOLAR : pagoRecibido;
-        } else {
-            pagoNormalizado = (monedaPagoRecibido === 'COR') ? pagoRecibido / TASA_DOLAR : pagoRecibido;
-        }
+        const tasaSistema = tasas[MONEDA_SESION] || 1;
+        const tasaPago = tasas[monedaPagoRecibido] || tasaSistema;
+        
+        // Convertir el pago a la moneda del sistema
+        let pagoNormalizado = (pagoRecibido / tasaPago) * tasaSistema;
 
         let vuelto = pagoNormalizado - totalVista;
         document.getElementById('vuelto_txt').innerText = SIMBOLO + " " + (vuelto > 0 ? vuelto.toFixed(2) : "0.00");

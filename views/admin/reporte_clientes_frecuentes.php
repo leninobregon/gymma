@@ -10,6 +10,7 @@ require_once "../../classes/Reporte.php";
 
 $db = (new Database())->getConnection();
 $config = (new AppConfig($db))->obtenerConfig();
+$simbolo = $config['moneda_simbolo'] ?? '<?php echo $simbolo; ?>';
 $tema = $_SESSION['tema'] ?? $config['tema'] ?? 'default';
 $reporte = new Reporte($db);
 
@@ -56,7 +57,7 @@ $metricas = $reporte->getMetricasAvanzadas();
         <div class="metricas-dashboard">
             <div class="metrica-box" style="border-color: var(--info);">
                 <h4>TICKET PROMEDIO</h4>
-                <div class="valor">C$ <?php echo number_format($metricas['ticket_promedio'], 2); ?></div>
+                <div class="valor"><?php echo $simbolo; ?> <?php echo number_format($metricas['ticket_promedio'], 2); ?></div>
             </div>
             <div class="metrica-box" style="border-color: var(--primary);">
                 <h4>VENTAS HOY</h4>
@@ -91,7 +92,7 @@ $metricas = $reporte->getMetricasAvanzadas();
                         <span>Compras</span>
                     </div>
                     <div>
-                        <strong style="color:var(--info);">C$ <?php echo number_format($c['total_gastado'], 2); ?></strong>
+                        <strong style="color:var(--info);"><?php echo $simbolo; ?> <?php echo number_format($c['total_gastado'], 2); ?></strong>
                         <span>Total Gastado</span>
                     </div>
                 </div>

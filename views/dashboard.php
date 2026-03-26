@@ -13,6 +13,7 @@ $dash = new Dashboard($db);
 $reporte = new Reporte($db);
 
 $tema = $_SESSION['tema'] ?? 'default';
+$simbolo = $config['moneda_simbolo'] ?? 'C$';
 
 $bg_body = '#f8f9fa';
 $bg_card = '#ffffff';
@@ -554,7 +555,7 @@ foreach($graf as $d) {
                         <?php foreach($ventasCategoria as $c): ?>
                         <div style="margin: 8px 0; padding: 8px; background: var(--bg-body); border-radius: 8px; display: flex; justify-content: space-between;">
                             <span><?php echo $c['categoria']; ?></span>
-                            <strong><?php echo $c['cantidad']; ?> - C$ <?php echo number_format($c['total'], 2); ?></strong>
+                            <strong><?php echo $c['cantidad']; ?> - <?php echo $simbolo; ?> <?php echo number_format($c['total'], 2); ?></strong>
                         </div>
                         <?php endforeach; ?>
                     </div>

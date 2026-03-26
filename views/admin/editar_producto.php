@@ -13,6 +13,7 @@ $configObj = new AppConfig($db);
 $config = $configObj->obtenerConfig();
 
 // Tasa de cambio para la referencia visual
+$simbolo = $config['moneda_simbolo'] ?? '<?php echo $simbolo; ?>';
 $tasa = $config['tipo_cambio_bcn'] ?? 36.6243;
 $tema = $_SESSION['tema'] ?? 'default';
 
@@ -39,7 +40,7 @@ if (!$p) { header("Location: gestion_inventario.php"); exit(); }
     <header>
         <div class="logo"><h2><i class="fas fa-box-open"></i> Editar Producto</h2></div>
         <div style="display:flex; align-items:center; gap:15px;">
-            <span class="tasa-info">Tasa Ref: C$ <?php echo number_format($tasa, 2); ?></span>
+            <span class="tasa-info">Tasa Ref: <?php echo $simbolo; ?> <?php echo number_format($tasa, 2); ?></span>
             <a href="gestion_inventario.php" class="btn-volver gris">← Cancelar</a>
         </div>
     </header>
@@ -61,7 +62,7 @@ if (!$p) { header("Location: gestion_inventario.php"); exit(); }
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                         <div style="display:flex; flex-direction:column;">
-                            <label style="font-size:0.8rem; color:gray; margin-bottom:5px;">PRECIO (C$)</label>
+                            <label style="font-size:0.8rem; color:gray; margin-bottom:5px;">PRECIO (<?php echo $simbolo; ?>)</label>
                             <input type="number" step="0.01" name="precio" id="precio_inv" value="<?php echo $p['precio']; ?>" required 
                                    style="padding:12px; border:1px solid #ddd; border-radius:8px; font-weight:bold;">
                             <span id="ref_usd_inv" class="helper-text">Equiv: $ <?php echo number_format($p['precio'] / $tasa, 2); ?> USD</span>

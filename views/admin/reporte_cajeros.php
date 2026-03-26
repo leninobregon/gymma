@@ -10,6 +10,7 @@ require_once "../../classes/Reporte.php";
 
 $db = (new Database())->getConnection();
 $config = (new AppConfig($db))->obtenerConfig();
+$simbolo = $config['moneda_simbolo'] ?? '<?php echo $simbolo; ?>';
 $tema = $_SESSION['tema'] ?? $config['tema'] ?? 'default';
 $reporte = new Reporte($db);
 
@@ -69,7 +70,7 @@ $cajeros = $reporte->getRendimientoCajero($desde, $hasta);
         <div class="metricas-grid">
             <div class="metrica-card" style="border-color: var(--primary);">
                 <h4>TOTAL RECAUDADO</h4>
-                <div class="valor">C$ <?php echo number_format($totalRecaudado, 2); ?></div>
+                <div class="valor"><?php echo $simbolo; ?> <?php echo number_format($totalRecaudado, 2); ?></div>
             </div>
             <div class="metrica-card" style="border-color: var(--info);">
                 <h4>TOTAL VENTAS</h4>
@@ -77,7 +78,7 @@ $cajeros = $reporte->getRendimientoCajero($desde, $hasta);
             </div>
             <div class="metrica-card" style="border-color: var(--warning);">
                 <h4>PROMEDIO/VENTA</h4>
-                <div class="valor">C$ <?php echo $totalVentas > 0 ? number_format($totalRecaudado / $totalVentas, 2) : '0.00'; ?></div>
+                <div class="valor"><?php echo $simbolo; ?> <?php echo $totalVentas > 0 ? number_format($totalRecaudado / $totalVentas, 2) : '0.00'; ?></div>
             </div>
         </div>
 
@@ -96,11 +97,11 @@ $cajeros = $reporte->getRendimientoCajero($desde, $hasta);
                             <span>Ventas</span>
                         </div>
                         <div>
-                            <strong style="color:var(--primary);">C$ <?php echo number_format($c['total_recaudado'], 2); ?></strong>
+                            <strong style="color:var(--primary);"><?php echo $simbolo; ?> <?php echo number_format($c['total_recaudado'], 2); ?></strong>
                             <span>Recaudado</span>
                         </div>
                         <div>
-                            <strong style="color:var(--danger);">C$ <?php echo number_format($c['total_anulado'], 2); ?></strong>
+                            <strong style="color:var(--danger);"><?php echo $simbolo; ?> <?php echo number_format($c['total_anulado'], 2); ?></strong>
                             <span>Anulado</span>
                         </div>
                     </div>

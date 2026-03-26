@@ -11,6 +11,7 @@ require_once "../../classes/Reporte.php";
 
 $db = (new Database())->getConnection();
 $config = (new AppConfig($db))->obtenerConfig();
+$simbolo = $config['moneda_simbolo'] ?? '<?php echo $simbolo; ?>';
 $tema = $_SESSION['tema'] ?? $config['tema'] ?? 'default';
 
 $reporte = new Reporte($db);
@@ -67,16 +68,16 @@ $categoria = $reporte->getIngresosPorCategoria($desde, $hasta);
         <div class="resumen-grid">
             <div class="resumen-card card-ingresos">
                 <h3>💰 Ingresos</h3>
-                <div class="monto" style="color:var(--primary);">C$ <?php echo number_format($datos['ingresos'], 2); ?></div>
+                <div class="monto" style="color:var(--primary);"><?php echo $simbolo; ?> <?php echo number_format($datos['ingresos'], 2); ?></div>
             </div>
             <div class="resumen-card card-egresos">
                 <h3>📤 Egresos</h3>
-                <div class="monto" style="color:var(--danger);">C$ <?php echo number_format($datos['egresos'], 2); ?></div>
+                <div class="monto" style="color:var(--danger);"><?php echo $simbolo; ?> <?php echo number_format($datos['egresos'], 2); ?></div>
             </div>
             <div class="resumen-card card-balance">
                 <h3>📊 Balance</h3>
                 <div class="monto" style="color:<?php echo $datos['balance'] >= 0 ? 'var(--primary)' : 'var(--danger)'; ?>">
-                    C$ <?php echo number_format($datos['balance'], 2); ?>
+                    <?php echo $simbolo; ?> <?php echo number_format($datos['balance'], 2); ?>
                 </div>
             </div>
         </div>
@@ -88,7 +89,7 @@ $categoria = $reporte->getIngresosPorCategoria($desde, $hasta);
                 <table style="margin-top:15px;">
                     <tr><th>Método</th><th>Total</th></tr>
                     <?php foreach($datos['por_metodo'] as $m): ?>
-                    <tr><td><?php echo $m['metodo_pago']; ?></td><td>C$ <?php echo number_format($m['total'], 2); ?></td></tr>
+                    <tr><td><?php echo $m['metodo_pago']; ?></td><td><?php echo $simbolo; ?> <?php echo number_format($m['total'], 2); ?></td></tr>
                     <?php endforeach; ?>
                 </table>
             </div>

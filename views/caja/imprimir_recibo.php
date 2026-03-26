@@ -3,11 +3,12 @@ require_once "../../config/Database.php";
 require_once "../../config/AppConfig.php";
 $db = (new Database())->getConnection();
 $config = (new AppConfig($db))->obtenerConfig();
+$simbolo = $config['moneda_simbolo'] ?? '<?php echo $simbolo; ?>';
 
 $id_venta = $_GET['id'] ?? 0;
 
 // La tasa de cambio la tomamos de la configuración del sistema
-$tasa_bcn = $config['tasa_cambio'] ?? 36.65; 
+$tasa_bcn = $config['tasa_cambio'] ?? $config['tipo_cambio_bcn'] ?? 36.65; 
 
 // Obtener datos de la venta, el socio y el nombre del cajero
 $stmt = $db->prepare("
@@ -69,7 +70,7 @@ $total_usd = $venta['monto_total'] / $tasa_bcn;
         FECHA: <?= date('d/m/Y H:i', strtotime($venta['fecha_venta'])) ?><br>
         
         CAJERO: <?= strtoupper($venta['cajero_nom']) ?><br>
-        T. CAMBIO: C$ <?= number_format($tasa_bcn, 2) ?><br>
+        T. CAMBIO: <?php echo $simbolo; ?> <?= number_format($tasa_bcn, 2) ?><br>
         
         <div class="linea"></div>
     </div>
@@ -84,14 +85,14 @@ $total_usd = $venta['monto_total'] / $tasa_bcn;
         <tbody>
             <tr>
                 <td style="padding: 4px 0;"><?= $venta['concepto'] ?></td>
-                <td class="text-right">C$ <?= number_format($venta['monto_total'], 2) ?></td>
+                <td class="text-right"><?php echo $simbolo; ?> <?= number_format($venta['monto_total'], 2) ?></td>
             </tr>
         </tbody>
         <tfoot>
             <tr><td colspan="2"><div class="linea"></div></td></tr>
             <tr style="font-size: 14px;">
                 <td class="bold">TOTAL NETO:</td>
-                <td class="text-right bold">C$ <?= number_format($venta['monto_total'], 2) ?></td>
+                <td class="text-right bold"><?php echo $simbolo; ?> <?= number_format($venta['monto_total'], 2) ?></td>
             </tr>
             <tr style="font-size: 12px; color: #333;">
                 <td class="bold italic">EQUIV. USD:</td>

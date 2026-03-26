@@ -6,9 +6,12 @@ if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'ADMIN') {
 $tema = $_SESSION['tema'] ?? 'default';
 
 require_once "../../config/Database.php";
+require_once "../../config/AppConfig.php";
 require_once "../../classes/Reporte.php";
 
 $db = (new Database())->getConnection();
+$config = (new AppConfig($db))->obtenerConfig();
+$simbolo = $config['moneda_simbolo'] ?? '<?php echo $simbolo; ?>';
 $reporteObj = new Reporte($db);
 
 $inventario = $reporteObj->getInventarioCompleto();
@@ -65,8 +68,8 @@ foreach ($inventario as $item) {
             <h2><?= number_format($totalItems) ?></h2>
         </div>
         <div class="card-stat">
-            <small>VALOR TOTAL (C$)</small>
-            <h2>C$ <?= number_format($totalValor, 2) ?></h2>
+            <small>VALOR TOTAL (<?php echo $simbolo; ?>)</small>
+            <h2><?php echo $simbolo; ?> <?= number_format($totalValor, 2) ?></h2>
         </div>
         <div class="card-stat alerta-stock">
             <small>BAJO STOCK (≤10)</small>
@@ -83,7 +86,7 @@ foreach ($inventario as $item) {
             <tr>
                 <td><?= $p['descripcion'] ?></td>
                 <td><span class="badge-stock stock-critico"><?= $p['cantidad'] ?></span></td>
-                <td>C$ <?= number_format($p['precio'], 2) ?></td>
+                <td><?php echo $simbolo; ?> <?= number_format($p['precio'], 2) ?></td>
             </tr>
             <?php endforeach; ?>
         </table>
@@ -96,9 +99,9 @@ foreach ($inventario as $item) {
                 <tr>
                     <th>ID</th>
                     <th>PRODUCTO</th>
-                    <th>PRECIO (C$)</th>
+                    <th>PRECIO (<?php echo $simbolo; ?>)</th>
                     <th>STOCK</th>
-                    <th>VALOR (C$)</th>
+                    <th>VALOR (<?php echo $simbolo; ?>)</th>
                     <th>ESTADO</th>
                 </tr>
             </thead>
@@ -110,9 +113,9 @@ foreach ($inventario as $item) {
                 <tr>
                     <td><?= $item['id'] ?></td>
                     <td><strong><?= $item['descripcion'] ?></strong></td>
-                    <td>C$ <?= number_format($item['precio'], 2) ?></td>
+                    <td><?php echo $simbolo; ?> <?= number_format($item['precio'], 2) ?></td>
                     <td><?= $item['cantidad'] ?></td>
-                    <td>C$ <?= number_format($item['cantidad'] * $item['precio'], 2) ?></td>
+                    <td><?php echo $simbolo; ?> <?= number_format($item['cantidad'] * $item['precio'], 2) ?></td>
                     <td><span class="badge-stock <?= $claseStock ?>"><?= $textoStock ?></span></td>
                 </tr>
                 <?php endforeach; ?>

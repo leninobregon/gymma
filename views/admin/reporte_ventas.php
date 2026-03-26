@@ -12,7 +12,8 @@ $configObj = new AppConfig($db);
 $config = $configObj->obtenerConfig();
 
 // Tasa de cambio oficial del sistema
-$tasa = $config['tasa_cambio'] ?? 36.65;
+$simbolo = $config['moneda_simbolo'] ?? '<?php echo $simbolo; ?>';
+$tasa = $config['tasa_cambio'] ?? $config['tipo_cambio_bcn'] ?? 36.65;
 $tema = $_SESSION['tema'] ?? 'default';
 
 // Filtros de fecha
@@ -71,7 +72,7 @@ foreach($reporte as $r) {
         <div class="logo"><h2><i class="fas fa-file-invoice-dollar"></i> Reporte Consolidado</h2></div>
         <div style="display:flex; align-items:center; gap:15px;">
             <span style="background:#2c3e50; color:white; padding:5px 12px; border-radius:20px; font-size:12px; font-weight:bold;">
-                Tasa: C$ <?= number_format($tasa, 2) ?>
+                Tasa: <?php echo $simbolo; ?> <?= number_format($tasa, 2) ?>
             </span>
             <a href="../dashboard.php" class="btn-volver gris">← Volver</a>
         </div>
@@ -93,14 +94,14 @@ foreach($reporte as $r) {
 
         <div class="stats-report">
             <div class="card-resumen" style="background:var(--success);">
-                <small>Ingresos Netos (C$)</small>
-                <h3>C$ <?= number_format($total_ingresos, 2) ?></h3>
+                <small>Ingresos Netos (<?php echo $simbolo; ?>)</small>
+                <h3><?php echo $simbolo; ?> <?= number_format($total_ingresos, 2) ?></h3>
                 <span class="usd-val">Equiv. $ <?= number_format($total_ingresos / $tasa, 2) ?> USD</span>
             </div>
             
             <div class="card-resumen" style="background:var(--danger);">
                 <small>Total Anulaciones</small>
-                <h3>C$ <?= number_format($total_anulado, 2) ?></h3>
+                <h3><?php echo $simbolo; ?> <?= number_format($total_anulado, 2) ?></h3>
                 <span class="usd-val">$ <?= number_format($total_anulado / $tasa, 2) ?> USD</span>
             </div>
 
@@ -118,7 +119,7 @@ foreach($reporte as $r) {
                         <th>FECHA / HORA</th>
                         <th>SOCIO / CLIENTE</th>
                         <th>CONCEPTO</th>
-                        <th style="text-align:right;">MONTO (C$)</th>
+                        <th style="text-align:right;">MONTO (<?php echo $simbolo; ?>)</th>
                         <th style="text-align:right;">REF (USD)</th>
                         <th style="text-align:center;">ESTADO</th>
                     </tr>
@@ -134,7 +135,7 @@ foreach($reporte as $r) {
                             <br><small style="color:#999;">Cajero: <?= $reg['cajero'] ?></small>
                         </td>
                         <td><?= $reg['concepto'] ?></td>
-                        <td style="text-align:right; font-weight:bold;">C$ <?= number_format($reg['monto_total'], 2) ?></td>
+                        <td style="text-align:right; font-weight:bold;"><?php echo $simbolo; ?> <?= number_format($reg['monto_total'], 2) ?></td>
                         <td style="text-align:right; color:var(--success); font-weight:bold;">
                             $ <?= number_format($reg['monto_total'] / $tasa, 2) ?>
                         </td>

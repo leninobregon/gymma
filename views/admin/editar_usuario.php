@@ -11,7 +11,8 @@ $db = (new Database())->getConnection();
 $userObj = new Usuario($db);
 $config = (new AppConfig($db))->obtenerConfig();
 
-$tasa_cambio = $config['tasa_cambio'] ?? 36.65;
+$simbolo = $config['moneda_simbolo'] ?? '<?php echo $simbolo; ?>';
+$tasa_cambio = $config['tasa_cambio'] ?? $config['tipo_cambio_bcn'] ?? 36.65;
 $id = $_GET['id'] ?? 0;
 $u = $userObj->obtenerPorId($id);
 $tema = $_SESSION['tema'] ?? 'default';
@@ -48,7 +49,7 @@ if (!$u) { header("Location: gestion_usuarios.php"); exit(); }
     <header>
         <div class="logo"><h2><i class="fas fa-user-edit"></i> Editar Usuario</h2></div>
         <div style="display:flex; align-items:center; gap:15px;">
-            <span class="tasa-destacada">TASA REF: C$ <?= $tasa_cambio ?></span>
+            <span class="tasa-destacada">TASA REF: <?php echo $simbolo; ?> <?= $tasa_cambio ?></span>
             <a href="gestion_usuarios.php" class="btn-volver gris">← Cancelar</a>
         </div>
     </header>

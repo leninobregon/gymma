@@ -14,8 +14,25 @@ $monedas = [
     ['iso'=>'NIO', 'nom'=>'Córdoba Nicaragüense', 'sim'=>'C$'],
     ['iso'=>'USD', 'nom'=>'Dólar Estadounidense', 'sim'=>'$'],
     ['iso'=>'EUR', 'nom'=>'Euro', 'sim'=>'€'],
+    ['iso'=>'GBP', 'nom'=>'Libra Esterlina', 'sim'=>'£'],
+    ['iso'=>'MXN', 'nom'=>'Peso Mexicano', 'sim'=>'$'],
     ['iso'=>'CRC', 'nom'=>'Colón Costarricense', 'sim'=>'₡'],
-    ['iso'=>'GTQ', 'nom'=>'Quetzal Guatemalteco', 'sim'=>'Q']
+    ['iso'=>'GTQ', 'nom'=>'Quetzal Guatemalteco', 'sim'=>'Q'],
+    ['iso'=>'HNL', 'nom'=>'Lempira Hondureña', 'sim'=>'L'],
+    ['iso'=>'SVC', 'nom'=>'Dólar Salvadoreño', 'sim'=>'$'],
+    ['iso'=>'COP', 'nom'=>'Peso Colombiano', 'sim'=>'$'],
+    ['iso'=>'VES', 'nom'=>'Bolívar Venezolano', 'sim'=>'Bs'],
+    ['iso'=>'ARS', 'nom'=>'Peso Argentino', 'sim'=>'$'],
+    ['iso'=>'BRL', 'nom'=>'Real Brasileño', 'sim'=>'R$'],
+    ['iso'=>'JPY', 'nom'=>'Yen Japonés', 'sim'=>'¥'],
+    ['iso'=>'CNY', 'nom'=>'Yuan Chino', 'sim'=>'¥'],
+    ['iso'=>'KRW', 'nom'=>'Won Coreano', 'sim'=>'₩'],
+    ['iso'=>'INR', 'nom'=>'Rupia India', 'sim'=>'₹'],
+    ['iso'=>'CAD', 'nom'=>'Dólar Canadiense', 'sim'=>'$'],
+    ['iso'=>'AUD', 'nom'=>'Dólar Australiano', 'sim'=>'$'],
+    ['iso'=>'CHF', 'nom'=>'Franco Suizo', 'sim'=>'Fr'],
+    ['iso'=>'PEN', 'nom'=>'Sol Peruano', 'sim'=>'S/'],
+    ['iso'=>'CLP', 'nom'=>'Peso Chileno', 'sim'=>'$']
 ];
 ?>
 <!DOCTYPE html>

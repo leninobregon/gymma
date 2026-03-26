@@ -12,7 +12,8 @@ $db = (new Database())->getConnection();
 $reporteObj = new Reporte($db);
 $config = (new AppConfig($db))->obtenerConfig();
 
-$tasa_cambio = $config['tasa_cambio'] ?? 36.65;
+$simbolo = $config['moneda_simbolo'] ?? '<?php echo $simbolo; ?>';
+$tasa_cambio = $config['tasa_cambio'] ?? $config['tipo_cambio_bcn'] ?? 36.65;
 $fechaI = $_GET['desde'] ?? null;
 $fechaF = $_GET['hasta'] ?? null;
 $tema = $_SESSION['tema'] ?? 'default';
@@ -58,7 +59,7 @@ foreach ($cierres as $ci) {
     <header>
         <div class="logo"><h2>📂 Historial de Cajas</h2></div>
         <div style="display:flex; align-items:center; gap:15px;">
-            <span class="tasa-destacada">TASA REF: C$ <?= $tasa_cambio ?></span>
+            <span class="tasa-destacada">TASA REF: <?php echo $simbolo; ?> <?= $tasa_cambio ?></span>
             <a href="../dashboard.php" class="btn-volver gris">← Volver</a>
         </div>
     </header>
@@ -82,12 +83,12 @@ foreach ($cierres as $ci) {
         <div class="grid-stats">
             <div class="card-stat">
                 <h4 style="margin:0; color:#7f8c8d;">SISTEMA (ESPERADO)</h4>
-                <h2 style="margin:5px 0;">C$ <?= number_format($totalEsperadoG, 2) ?></h2>
+                <h2 style="margin:5px 0;"><?php echo $simbolo; ?> <?= number_format($totalEsperadoG, 2) ?></h2>
                 <span class="monto-ref">$ <?= number_format($totalEsperadoG / $tasa_cambio, 2) ?> USD</span>
             </div>
             <div class="card-stat" style="border-top-color: #2ecc71;">
                 <h4 style="margin:0; color:#7f8c8d;">ENTREGADO (REAL)</h4>
-                <h2 style="margin:5px 0;">C$ <?= number_format($totalRealG, 2) ?></h2>
+                <h2 style="margin:5px 0;"><?php echo $simbolo; ?> <?= number_format($totalRealG, 2) ?></h2>
                 <span class="monto-ref">$ <?= number_format($totalRealG / $tasa_cambio, 2) ?> USD</span>
             </div>
         </div>
@@ -98,8 +99,8 @@ foreach ($cierres as $ci) {
                     <tr style="background:#f8f9fa; border-bottom:2px solid #eee;">
                         <th style="padding:15px; text-align:left;">CAJERO / USUARIO</th>
                         <th style="text-align:left;">TIEMPOS (INICIO - FIN)</th>
-                        <th style="text-align:right;">ESPERADO (C$)</th>
-                        <th style="text-align:right;">REAL (C$)</th>
+                        <th style="text-align:right;">ESPERADO (<?php echo $simbolo; ?>)</th>
+                        <th style="text-align:right;">REAL (<?php echo $simbolo; ?>)</th>
                         <th style="text-align:right;">DIFERENCIA</th>
                     </tr>
                 </thead>
@@ -120,18 +121,18 @@ foreach ($cierres as $ci) {
                             </span>
                         </td>
                         <td style="text-align:right;">
-                            <strong>C$ <?= number_format($c['monto_esperado'], 2) ?></strong><br>
+                            <strong><?php echo $simbolo; ?> <?= number_format($c['monto_esperado'], 2) ?></strong><br>
                             <small style="color:#7f8c8d;">$ <?= number_format($c['monto_esperado'] / $tasa_cambio, 2) ?></small>
                         </td>
                         <td style="text-align:right;">
-                            <strong>C$ <?= number_format($c['monto_cierre'], 2) ?></strong><br>
+                            <strong><?php echo $simbolo; ?> <?= number_format($c['monto_cierre'], 2) ?></strong><br>
                             <small style="color:#7f8c8d;">$ <?= number_format($c['monto_cierre'] / $tasa_cambio, 2) ?></small>
                         </td>
                         <td style="text-align:right; vertical-align: middle;" class="<?= ($dif < 0) ? 'dif-negativa':'dif-positiva' ?>">
                             <?php if($isAbierta): ?>
                                 <span style="color:#95a5a6;">---</span>
                             <?php else: ?>
-                                <?= ($dif >= 0 ? '+' : '') . 'C$ ' . number_format($dif, 2) ?><br>
+                                <?= ($dif >= 0 ? '+' : '') . '<?php echo $simbolo; ?> ' . number_format($dif, 2) ?><br>
                                 <small>(<?= number_format($dif / $tasa_cambio, 2) ?> USD)</small>
                             <?php endif; ?>
                         </td>

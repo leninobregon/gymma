@@ -9,6 +9,7 @@ require_once "../../config/AppConfig.php";
 
 $db = (new Database())->getConnection();
 $config = (new AppConfig($db))->obtenerConfig();
+$simbolo = $config['moneda_simbolo'] ?? '<?php echo $simbolo; ?>';
 $tema = $_SESSION['tema'] ?? $config['tema'] ?? 'default';
 
 $id_caja = $_GET['id'] ?? null;
@@ -63,16 +64,16 @@ foreach($ventas as $v) {
             <div class="card-info">
                 <h3 style="margin-top:0;">Resumen del Turno</h3>
                 <p><b>Estado:</b> <?= ($caja['estado'] == 'ABIERTA') ? '🟢 ABIERTA' : '🔴 CERRADA' ?></p>
-                <p><b>Tasa Aplicada:</b> C$ <?= number_format($caja['tasa_apertura'], 2) ?></p>
+                <p><b>Tasa Aplicada:</b> <?php echo $simbolo; ?> <?= number_format($caja['tasa_apertura'], 2) ?></p>
                 <hr>
                 
                 <p style="margin-bottom:5px;"><b>Ventas Netas (Turno):</b></p>
-                <p class="monto-principal">C$ <?= number_format($totalVentasCords, 2) ?></p>
+                <p class="monto-principal"><?php echo $simbolo; ?> <?= number_format($totalVentasCords, 2) ?></p>
                 <p class="monto-secundario">$ <?= number_format($totalVentasUsd, 2) ?> USD</p>
                 
                 <hr>
                 <p><b>Saldo Final en Caja:</b></p>
-                <h2 style="color:#2ecc71; margin:5px 0;">C$ <?= number_format($caja['monto_esperado'], 2) ?></h2>
+                <h2 style="color:#2ecc71; margin:5px 0;"><?php echo $simbolo; ?> <?= number_format($caja['monto_esperado'], 2) ?></h2>
                 <span class="ref-usd">Equiv. $ <?= number_format($caja['monto_esperado'] / $caja['tasa_apertura'], 2) ?> USD</span>
 
                 <?php if($caja['nota']): ?>
@@ -89,7 +90,7 @@ foreach($ventas as $v) {
                         <tr>
                             <th>Hora</th>
                             <th>Concepto</th>
-                            <th style="text-align:right;">Monto (C$)</th>
+                            <th style="text-align:right;">Monto (<?php echo $simbolo; ?>)</th>
                             <th style="text-align:right;">Ref (USD)</th>
                             <th style="text-align:center;">Estado</th>
                         </tr>
@@ -102,11 +103,11 @@ foreach($ventas as $v) {
                             <td><?= date('h:i A', strtotime($v['fecha_venta'])) ?></td>
                             <td>
                                 <strong><?= $v['concepto'] ?></strong><br>
-                                <small style="color:#bdc3c7;">Tasa: C$ <?= $v['tasa_cambio_momento'] ?></small>
+                                <small style="color:#bdc3c7;">Tasa: <?php echo $simbolo; ?> <?= $v['tasa_cambio_momento'] ?></small>
                             </td>
                             <td style="text-align:right; font-weight:bold;">
                                 <?= $esAnulado ? '<strike>' : '' ?>
-                                C$ <?= number_format($v['monto_total'], 2) ?>
+                                <?php echo $simbolo; ?> <?= number_format($v['monto_total'], 2) ?>
                                 <?= $esAnulado ? '</strike>' : '' ?>
                             </td>
                             <td style="text-align:right;">

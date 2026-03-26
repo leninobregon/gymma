@@ -14,7 +14,8 @@ $db = (new Database())->getConnection();
 $userObj = new Usuario($db);
 $config = (new AppConfig($db))->obtenerConfig();
 
-$tasa_cambio = $config['tasa_cambio'] ?? 36.65;
+$simbolo = $config['moneda_simbolo'] ?? '<?php echo $simbolo; ?>';
+$tasa_cambio = $config['tasa_cambio'] ?? $config['tipo_cambio_bcn'] ?? 36.65;
 $usuarios = $userObj->listarUsuarios();
 $tema = $_SESSION['tema'] ?? 'default';
 ?>
@@ -47,7 +48,7 @@ $tema = $_SESSION['tema'] ?? 'default';
     <header>
         <div class="logo"><h2><i class="fas fa-user-cog"></i> Gestión de Usuarios</h2></div>
         <div style="display:flex; align-items:center; gap:15px;">
-            <span class="tasa-destacada">TASA REF: C$ <?= $tasa_cambio ?></span>
+            <span class="tasa-destacada">TASA REF: <?php echo $simbolo; ?> <?= $tasa_cambio ?></span>
             <a href="../dashboard.php" class="btn-volver gris">← Volver</a>
         </div>
     </header>

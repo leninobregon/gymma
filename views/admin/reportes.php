@@ -16,7 +16,8 @@ $configObj = new AppConfig($db);
 $config = $configObj->obtenerConfig();
 
 // Tasa de cambio desde configuración
-$tasa_cambio = $config['tasa_cambio'] ?? 36.65;
+$simbolo = $config['moneda_simbolo'] ?? '<?php echo $simbolo; ?>';
+$tasa_cambio = $config['tasa_cambio'] ?? $config['tipo_cambio_bcn'] ?? 36.65;
 $fechaI = $_GET['desde'] ?? null;
 $fechaF = $_GET['hasta'] ?? null;
 $buscar_id = $_GET['buscar_id'] ?? null;
@@ -72,7 +73,7 @@ foreach ($ventas as $v) {
     <header>
         <div class="logo"><h2><i class="fas fa-chart-line"></i> Reporte Financiero</h2></div>
         <div style="display:flex; align-items:center; gap:15px;">
-            <span class="tasa-badge">Tasa: C$ <?= number_format($tasa_cambio, 2) ?></span>
+            <span class="tasa-badge">Tasa: <?php echo $simbolo; ?> <?= number_format($tasa_cambio, 2) ?></span>
             <a href="../dashboard.php" class="btn-volver gris"><i class="fas fa-arrow-left"></i> Dashboard</a>
         </div>
     </header>
@@ -106,21 +107,21 @@ foreach ($ventas as $v) {
         <div class="grid-stats">
             <div class="card-stat" style="border-bottom-color: var(--primary);">
                 <small style="color:var(--text-muted); font-weight:bold;">RECAUDACIÓN TOTAL (NETA)</small>
-                <h2>C$ <?= number_format($totalRecaudado, 2) ?></h2>
+                <h2><?php echo $simbolo; ?> <?= number_format($totalRecaudado, 2) ?></h2>
                 <span class="monto-usd">$ <?= number_format($totalRecaudado / $tasa_cambio, 2) ?> USD</span>
             </div>
 
             <?php foreach($resumenCajeros as $rc): ?>
                 <div class="card-stat">
                     <small style="color:var(--text-muted); font-weight:bold;">CAJERO: <?= strtoupper($rc['nombre_persona']) ?></small>
-                    <h2>C$ <?= number_format($rc['recaudado'], 2) ?></h2>
+                    <h2><?php echo $simbolo; ?> <?= number_format($rc['recaudado'], 2) ?></h2>
                     <span class="monto-usd">$ <?= number_format($rc['recaudado'] / $tasa_cambio, 2) ?></span>
                 </div>
             <?php endforeach; ?>
 
             <div class="card-stat" style="border-bottom-color: var(--danger);">
                 <small style="color:var(--text-muted); font-weight:bold;">TOTAL ANULACIONES</small>
-                <h2 style="color:var(--danger);">C$ <?= number_format($totalAnulado, 2) ?></h2>
+                <h2 style="color:var(--danger);"><?php echo $simbolo; ?> <?= number_format($totalAnulado, 2) ?></h2>
                 <span style="color:var(--danger); font-size:12px;">Pérdida/Ajuste en proceso</span>
             </div>
         </div>
@@ -134,7 +135,7 @@ foreach ($ventas as $v) {
                         <th style="padding:15px; text-align:left;">FECHA / HORA</th>
                         <th style="text-align:left;">CONCEPTO</th>
                         <th style="text-align:left;">CLIENTE</th>
-                        <th style="text-align:right;">MONTO (C$)</th>
+                        <th style="text-align:right;">MONTO (<?php echo $simbolo; ?>)</th>
                         <th style="text-align:right;">EQUIV (USD)</th>
                         <th style="text-align:center;">ESTADO</th>
                         <th style="text-align:center;">ACCIONES</th>

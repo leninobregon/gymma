@@ -14,6 +14,7 @@ $config = $configObj->obtenerConfig();
 $planObj = new Plan($db);
 
 // Tasa de cambio para la referencia visual
+$simbolo = $config['moneda_simbolo'] ?? '<?php echo $simbolo; ?>';
 $tasa = $config['tipo_cambio_bcn'] ?? 36.6243;
 $tema = $_SESSION['tema'] ?? 'default';
 
@@ -38,7 +39,7 @@ if (!$p) { header("Location: gestion_planes.php"); exit(); }
     <header>
         <div class="logo"><h2><i class="fas fa-tag"></i> Editar Plan</h2></div>
         <div style="display:flex; align-items:center; gap:10px;">
-            <span class="tasa-badge">Tasa BCN: C$ <?php echo number_format($tasa, 4); ?></span>
+            <span class="tasa-badge">Tasa BCN: <?php echo $simbolo; ?> <?php echo number_format($tasa, 4); ?></span>
             <a href="gestion_planes.php" class="btn-volver gris">← Cancelar</a>
         </div>
     </header>
@@ -66,7 +67,7 @@ if (!$p) { header("Location: gestion_planes.php"); exit(); }
                         </div>
 
                         <div style="display:flex; flex-direction:column;">
-                            <label style="font-size:0.8rem; color:gray; margin-bottom:5px;">PRECIO (C$)</label>
+                            <label style="font-size:0.8rem; color:gray; margin-bottom:5px;">PRECIO (<?php echo $simbolo; ?>)</label>
                             <input type="number" step="0.01" name="precio" id="precio_input" value="<?php echo $p['precio']; ?>" required 
                                    style="padding:12px; border:1px solid #ddd; border-radius:8px; font-weight:bold; color:#2c3e50;">
                             <span id="ref_usd" class="helper-text">Ref: $ <?php echo number_format($p['precio'] / $tasa, 2); ?> USD</span>

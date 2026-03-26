@@ -7,6 +7,7 @@ require_once "../../config/AppConfig.php";
 
 $db = (new Database())->getConnection();
 $config = (new AppConfig($db))->obtenerConfig();
+$simbolo = $config['moneda_simbolo'] ?? '<?php echo $simbolo; ?>';
 $tema = $_SESSION['tema'] ?? $config['tema'] ?? 'default';
 
 $id_caja = $_SESSION['id_caja'];
@@ -38,10 +39,10 @@ $esperado = $caja['monto_apertura'] + $totalVentas;
 <body class="<?php echo ($tema !== 'default') ? 'tema-' . $tema : ''; ?>">
     <div class="card">
         <h2 style="text-align:center;">🔒 CERRAR TURNO</h2>
-        <div class="fila"><span>Apertura:</span> <span>C$ <?=number_format($caja['monto_apertura'], 2)?></span></div>
-        <div class="fila"><span>Ventas:</span> <span>C$ <?=number_format($totalVentas, 2)?></span></div>
+        <div class="fila"><span>Apertura:</span> <span><?php echo $simbolo; ?> <?=number_format($caja['monto_apertura'], 2)?></span></div>
+        <div class="fila"><span>Ventas:</span> <span><?php echo $simbolo; ?> <?=number_format($totalVentas, 2)?></span></div>
         <hr>
-        <div class="fila" style="color: #27ae60; font-size: 1.2rem;"><span>DEBE HABER:</span> <span>C$ <?=number_format($esperado, 2)?></span></div>
+        <div class="fila" style="color: #27ae60; font-size: 1.2rem;"><span>DEBE HABER:</span> <span><?php echo $simbolo; ?> <?=number_format($esperado, 2)?></span></div>
 
         <form action="../../controllers/CajaController.php" method="POST">
             <input type="hidden" name="id_caja" value="<?=$id_caja?>">

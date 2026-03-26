@@ -9,6 +9,7 @@ require_once "../../config/AppConfig.php";
 
 $db = (new Database())->getConnection();
 $config = (new AppConfig($db))->obtenerConfig();
+$simbolo = $config['moneda_simbolo'] ?? '<?php echo $simbolo; ?>';
 $tema = $_SESSION['tema'] ?? $config['tema'] ?? 'default';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registrar_egreso'])) {
@@ -64,7 +65,7 @@ $totalEgresos = array_sum(array_column($egresos, 'monto_salida'));
             <h3 style="margin-top:0;">➕ Nuevo Egreso</h3>
             <form method="POST">
                 <input type="text" name="descripcion" placeholder="Descripción del gasto" required style="width: 300px;">
-                <input type="number" step="0.01" name="monto" placeholder="Monto (C$)" required style="width: 120px;">
+                <input type="number" step="0.01" name="monto" placeholder="Monto (<?php echo $simbolo; ?>)" required style="width: 120px;">
                 <select name="categoria">
                     <option value="GENERAL">General</option>
                     <option value="SERVICIOS">Servicios</option>
@@ -78,7 +79,7 @@ $totalEgresos = array_sum(array_column($egresos, 'monto_salida'));
         </div>
 
         <div class="stat-card">
-            <h3><i class="fas fa-file-invoice-dollar"></i> Total Egresos: C$ <?php echo number_format($totalEgresos, 2); ?></h3>
+            <h3><i class="fas fa-file-invoice-dollar"></i> Total Egresos: <?php echo $simbolo; ?> <?php echo number_format($totalEgresos, 2); ?></h3>
             <table class="tabla-egresos">
                 <thead>
                     <tr><th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Usuario</th><th>Monto</th></tr>
@@ -90,7 +91,7 @@ $totalEgresos = array_sum(array_column($egresos, 'monto_salida'));
                         <td><?php echo htmlspecialchars($e['descripcion']); ?></td>
                         <td><?php echo $e['categoria']; ?></td>
                         <td><?php echo $e['usuario']; ?></td>
-                        <td style="color: var(--danger); font-weight: bold;">C$ <?php echo number_format($e['monto_salida'], 2); ?></td>
+                        <td style="color: var(--danger); font-weight: bold;"><?php echo $simbolo; ?> <?php echo number_format($e['monto_salida'], 2); ?></td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>

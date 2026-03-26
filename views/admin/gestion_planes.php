@@ -15,7 +15,8 @@ $planObj = new Plan($db);
 $planes = $planObj->listarTodo();
 
 // Tasa de cambio para cálculos de referencia
-$tasa = $config['tasa_cambio'] ?? 36.65;
+$simbolo = $config['moneda_simbolo'] ?? 'C$';
+$tasa = $config['tasa_cambio'] ?? $config['tipo_cambio_bcn'] ?? 36.65;
 $tema = $_SESSION['tema'] ?? 'default';
 ?>
 <!DOCTYPE html>
@@ -35,7 +36,7 @@ $tema = $_SESSION['tema'] ?? 'default';
     <header>
         <div class="logo"><h2><i class="fas fa-tags"></i> Gestión de Planes</h2></div>
         <div style="display:flex; align-items:center; gap:15px;">
-            <span class="tasa-ref">Tasa: C$ <?php echo number_format($tasa, 2); ?></span>
+            <span class="tasa-ref">Tasa: <?php echo $simbolo; ?> <?php echo number_format($tasa, 2); ?></span>
             <a href="../dashboard.php" class="btn-volver gris">← Volver</a>
         </div>
     </header>
@@ -60,7 +61,7 @@ $tema = $_SESSION['tema'] ?? 'default';
                     <input type="number" name="duracion_dias" placeholder="Días (Ej: 30)" required style="padding:10px; border:1px solid #ddd; border-radius:8px;">
                     
                     <div class="input-wrapper">
-                        <input type="number" step="0.01" name="precio" id="precio_plan" placeholder="Precio (C$)" required style="padding:10px; border:1px solid #ddd; border-radius:8px; width:100%;">
+                        <input type="number" step="0.01" name="precio" id="precio_plan" placeholder="Precio (<?php echo $simbolo; ?>)" required style="padding:10px; border:1px solid #ddd; border-radius:8px; width:100%;">
                         <small id="hint_usd" class="input-hint">Ref: $ 0.00 USD</small>
                     </div>
                 </div>
@@ -76,7 +77,7 @@ $tema = $_SESSION['tema'] ?? 'default';
                     <tr style="background: #f8f9fa; color: #7f8c8d; text-align: left; border-bottom: 2px solid #eee;">
                         <th style="padding: 15px;">NOMBRE DEL PLAN</th>
                         <th style="padding: 15px;">DURACIÓN</th>
-                        <th style="padding: 15px;">PRECIO (C$)</th>
+                        <th style="padding: 15px;">PRECIO (<?php echo $simbolo; ?>)</th>
                         <th style="padding: 15px;">EQUIV. (USD)</th>
                         <th style="padding: 15px; text-align: center;">ACCIONES</th>
                     </tr>
@@ -86,7 +87,7 @@ $tema = $_SESSION['tema'] ?? 'default';
                     <tr style="border-bottom: 1px solid #eee;">
                         <td style="padding: 15px;"><strong><?php echo strtoupper($row['nombre_plan']); ?></strong></td>
                         <td style="padding: 15px; color: #666;"><?php echo $row['duracion_dias']; ?> Días</td>
-                        <td style="padding: 15px;"><strong>C$ <?php echo number_format($row['precio'], 2); ?></strong></td>
+                        <td style="padding: 15px;"><strong><?php echo $simbolo; ?> <?php echo number_format($row['precio'], 2); ?></strong></td>
                         <td style="padding: 15px;">
                             <span class="precio-usd">$ <?php echo number_format($row['precio'] / $tasa, 2); ?></span>
                         </td>

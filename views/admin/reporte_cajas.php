@@ -6,9 +6,12 @@ if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'ADMIN') {
 $tema = $_SESSION['tema'] ?? 'default';
 
 require_once "../../config/Database.php";
+require_once "../../config/AppConfig.php";
 require_once "../../classes/Reporte.php";
 
 $db = (new Database())->getConnection();
+$config = (new AppConfig($db))->obtenerConfig();
+$simbolo = $config['moneda_simbolo'] ?? 'C$';
 $reporteObj = new Reporte($db);
 
 $fechaI = $_GET['desde'] ?? null;
@@ -94,8 +97,8 @@ foreach ($cajas as $c) {
             <h2 style="color:#7f8c8d;"><?= $cajasCerradas ?></h2>
         </div>
         <div class="card-stat" style="border-left: 4px solid #f39c12;">
-            <small>MONTO APERTURA (C$)</small>
-            <h2>C$ <?= number_format($totalApertura, 2) ?></h2>
+            <small>MONTO APERTURA (<?php echo $simbolo; ?>)</small>
+            <h2><?php echo $simbolo; ?> <?= number_format($totalApertura, 2) ?></h2>
         </div>
     </div>
 
@@ -107,9 +110,9 @@ foreach ($cajas as $c) {
                     <th>USUARIO</th>
                     <th>APERTURA</th>
                     <th>CIERRE</th>
-                    <th>APERTURA (C$)</th>
-                    <th>ESPERADO (C$)</th>
-                    <th>CIERRE (C$)</th>
+                    <th>APERTURA (<?php echo $simbolo; ?>)</th>
+                    <th>ESPERADO (<?php echo $simbolo; ?>)</th>
+                    <th>CIERRE (<?php echo $simbolo; ?>)</th>
                     <th>DIFERENCIA</th>
                     <th>ESTADO</th>
                 </tr>
@@ -127,9 +130,9 @@ foreach ($cajas as $c) {
                     <td><?= $c['nombre_usuario'] ?></td>
                     <td><?= date('d/m H:i', strtotime($c['fecha_apertura'])) ?></td>
                     <td><?= $c['fecha_cierre'] ? date('d/m H:i', strtotime($c['fecha_cierre'])) : '-' ?></td>
-                    <td>C$ <?= number_format($c['monto_apertura'], 2) ?></td>
-                    <td>C$ <?= number_format($c['monto_esperado'], 2) ?></td>
-                    <td>C$ <?= number_format($c['monto_cierre'], 2) ?></td>
+                    <td><?php echo $simbolo; ?> <?= number_format($c['monto_apertura'], 2) ?></td>
+                    <td><?php echo $simbolo; ?> <?= number_format($c['monto_esperado'], 2) ?></td>
+                    <td><?php echo $simbolo; ?> <?= number_format($c['monto_cierre'], 2) ?></td>
                     <td class="diferencia <?= $claseDiff ?>">
                         <?= ($diferencia >= 0 ? '+' : '') . number_format($diferencia, 2) ?>
                     </td>
