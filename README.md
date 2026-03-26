@@ -231,7 +231,7 @@ sudo chown -R www-data:www-data /var/www/html/gym_ma
 sudo chmod -R 755 /var/www/html/gym_ma
 
 # Carpeta tmp
-sudo chmod 777 /var/www/html/gym_ma/tmp
+sudo chmod 777 /var/www/html/gym_ma
 ```
 
 #### Ver logs
