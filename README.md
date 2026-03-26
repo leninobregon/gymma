@@ -162,7 +162,23 @@ sudo chmod 777 /var/www/html/gym_ma/tmp
 
 # Configurar Apache
 sudo nano /etc/apache2/sites-available/gym_ma.conf
-# (Agregar configuración de VirtualHost)
+
+```apache
+<VirtualHost *:80>
+    ServerName gym_ma.local
+    ServerAlias www.gym_ma.local
+    DocumentRoot /var/www/html/gym_ma
+
+    <Directory /var/www/html/gym_ma>
+        Options -Indexes +FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/gym_ma_error.log
+    CustomLog ${APACHE_LOG_DIR}/gym_ma_access.log combined
+</VirtualHost>
+```
 
 sudo a2ensite gym_ma.conf
 sudo a2enmod rewrite
