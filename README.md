@@ -178,7 +178,7 @@ sudo git clone https://github.com/leninobregon/gymma.git gym_ma
 # Permisos
 sudo chown -R www-data:www-data /var/www/html/gym_ma
 sudo chmod -R 755 /var/www/html/gym_ma
-sudo chmod 777 /var/www/html/gym_ma/tmp
+sudo chmod 777 /var/www/html/gym_ma
 
 # Configurar Apache
 sudo nano /etc/apache2/sites-available/gym_ma.conf
