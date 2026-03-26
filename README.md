@@ -238,6 +238,32 @@ sudo chmod 777 /var/www/html/gym_ma/tmp
 ```bash
 sudo tail -f /var/log/apache2/gym_ma_error.log
 ```
+
+#### HTTP Error 500
+Si aparece Error 500:
+
+```bash
+# 1. Ver logs de Apache
+sudo tail -f /var/log/apache2/error.log
+
+# 2. Habilitar mostrar errores en PHP
+sudo nano /etc/php/8.1/apache2/php.ini
+# Cambiar:
+display_errors = Off
+# Por:
+display_errors = On
+
+# 3. Reiniciar Apache
+sudo systemctl restart apache2
+
+# 4. Verificar extensiones PHP necesarias
+sudo apt install php-mysql php-zip php-curl php-xml php-mbstring -y
+
+# 5. Permisos correctos
+sudo chown -R www-data:www-data /var/www/html/gym_ma
+sudo find /var/www/html/gym_ma -type f -exec chmod 644 {} \;
+sudo find /var/www/html/gym_ma -type d -exec chmod 755 {} \;
+```
 ```
 
 ### 🌐 Linux (Debian/Ubuntu) con LEMP
