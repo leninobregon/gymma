@@ -268,6 +268,12 @@ sudo apt install php8.2-mysql php8.2-zip php8.2-curl php8.2-xml php8.2-mbstring 
 # 3. Reiniciar Apache
 sudo systemctl restart apache2
 
+# 4. Verificar que funcionan las extensiones
+php -m | grep -E "pdo|mysql|zip|curl"
+
+# 5. Si siguen los errores, ver logs específicos
+sudo tail -50 /var/log/apache2/error.log | grep -i "auth\|php\|fatal"
+
 # 2. Ver logs de errores específicos
 sudo tail -100 /var/log/apache2/error.log | grep -i error
 
