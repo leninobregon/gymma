@@ -154,6 +154,23 @@ EXIT;
 # Actualizar config/database.php con las credenciales
 # o ejecutar el instalador: http://tu-servidor/instalar.php
 
+## 📥 Importar Base de Datos
+
+### Opción 1: Desde el navegador
+Ejecuta el instalador:
+```
+http://tu-servidor/instalar.php
+```
+
+### Opción 2: Desde terminal
+```bash
+# Importar SQL
+sudo mysql -u root -p gym_ma_db < /var/www/html/gym_ma/db/gym_ma_db.sql
+
+# Verificar tablas
+sudo mysql -u root -p -e "USE gym_ma_db; SHOW TABLES;"
+```
+
 # Descargar proyecto
 cd /var/www/html
 sudo git clone https://github.com/leninobregon/gymma.git gym_ma
