@@ -34,9 +34,9 @@ GYM MA es una solución integral y ligera diseñada para la administración efic
 - Reimpresión de tickets
 
 ### 🎨 Sistema de Temas
-- **Default** - Colores claros profesionales
-- **Oscuro** - Fondo oscuro moderno
-- **Darkblue** - Tono azul elegante
+- Default - Colores claros profesionales
+- Oscuro - Fondo oscuro moderno
+- Darkblue - Tono azul elegante
 
 ---
 
@@ -103,6 +103,22 @@ Al finalizar, el cajero ingresa el **Monto Real** físico. El sistema compara es
 
 ---
 
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT.
+
+Copyright (c) 2026 GYM MA DB
+
+Se concede permiso por la presente, de forma gratuita, a cualquier persona que obtenga una copia de este software y de los archivos de documentación asociados, para utilizar el software sin restricción.
+
+---
+
+## ✉️ Soporte y Respaldo
+- **Backups**: Utiliza la opción "Respaldar Base de Datos" regularmente
+- **Soporte**: Contacta al administrador del sistema
+
+---
+
 ## 📖 Guía de Instalación
 
 ### 🪟 Windows con XAMPP
@@ -129,9 +145,8 @@ sudo systemctl enable apache2 mariadb
 sudo systemctl start apache2 mariadb
 ```
 
-#### Configurar MariaDB
-
 ```bash
+# Configurar MariaDB
 sudo mysql -u root -p
 ```
 
@@ -143,7 +158,22 @@ FLUSH PRIVILEGES;
 EXIT;
 ```
 
-#### Importar Base de Datos
+```bash
+# Actualizar config/database.php con las credenciales
+# o ejecutar el instalador: http://tu-servidor/instalar.php
+```
+
+---
+
+### 📥 Importar Base de Datos
+
+#### Opción 1: Desde el navegador
+Ejecuta el instalador:
+```
+http://tu-servidor/instalar.php
+```
+
+#### Opción 2: Desde terminal
 
 ```bash
 # Importar SQL
@@ -153,22 +183,28 @@ sudo mysql -u root -p gym_ma_db < /var/www/html/gym_ma/db/gym_ma_db.sql
 sudo mysql -u root -p -e "USE gym_ma_db; SHOW TABLES;"
 ```
 
-#### Descargar proyecto
+---
+
+### 📂 Descargar proyecto
 
 ```bash
 cd /var/www/html
 sudo git clone https://github.com/leninobregon/gymma.git gym_ma
 ```
 
-#### Permisos
+---
+
+### 🔐 Permisos
 
 ```bash
 sudo chown -R www-data:www-data /var/www/html/gym_ma
 sudo chmod -R 755 /var/www/html/gym_ma
-sudo chmod 777 /var/www/html/gym_ma/tmp
+sudo chmod 777 /var/www/html/gym_ma
 ```
 
-#### Configurar Apache
+---
+
+### ⚙️ Configurar Apache
 
 ```bash
 sudo nano /etc/apache2/sites-available/gym_ma.conf
@@ -176,7 +212,8 @@ sudo nano /etc/apache2/sites-available/gym_ma.conf
 
 ```apache
 <VirtualHost *:80>
-    ServerName localhost
+    ServerName gym_ma.local
+    ServerAlias www.gym_ma.local
     DocumentRoot /var/www/html/gym_ma
 
     <Directory /var/www/html/gym_ma>
@@ -192,8 +229,11 @@ sudo nano /etc/apache2/sites-available/gym_ma.conf
 
 ```bash
 sudo a2ensite gym_ma.conf
-sudo a2dissite 000-default.conf
 sudo a2enmod rewrite
+sudo systemctl reload apache2
+
+# Si hay errores, usar:
+sudo a2ensite gym_ma.conf --force
 sudo systemctl restart apache2
 ```
 
@@ -201,7 +241,8 @@ sudo systemctl restart apache2
 
 ## 🛠️ Solución de Problemas
 
-### Página por defecto de Apache
+### 📌 Página por defecto de Apache
+Si carga la página por defecto de Debian:
 
 ```bash
 # Deshabilitar página por defecto
@@ -214,74 +255,186 @@ sudo apache2ctl configtest
 sudo systemctl restart apache2
 ```
 
-### Permisos
-
+### 📌 Permisos
 ```bash
 # Permisos correctos
 sudo chown -R www-data:www-data /var/www/html/gym_ma
 sudo chmod -R 755 /var/www/html/gym_ma
+sudo chmod 777 /var/www/html/gym_ma
 ```
 
-### Ver logs
-
+### 📌 Ver logs
 ```bash
 # Logs de Apache
 sudo tail -f /var/log/apache2/error.log
+
+# Logs de PHP
+sudo tail -f /var/log/php*-fpm.log
+
+# Accede al sitio para generar el error y revisa los logs
 ```
 
-### HTTP Error 500
+### 📌 HTTP Error 500
+Si aparece Error 500:
 
 ```bash
-# 1. Verificar versión de PHP
+# 1. Verificar versión de PHP (importante!)
 php -v
 
 # 2. Instalar extensiones PHP según tu versión
 # PHP 8.2:
 sudo apt install php8.2-mysql php8.2-zip php8.2-curl php8.2-xml php8.2-mbstring -y
 
+# PHP 8.1:
+sudo apt install php8.1-mysql php8.1-zip php8.1-curl php8.1-xml php8.1-mbstring -y
+
+# PHP 8.0:
+sudo apt install php8.0-mysql php8.0-zip php8.0-curl php8.0-xml php8.0-mbstring -y
+
+# PHP 7.4:
+sudo apt install php7.4-mysql php7.4-zip php7.4-curl php7.4-xml php7.4-mbstring -y
+
 # 3. Reiniciar Apache
 sudo systemctl restart apache2
 
-# 4. Ver logs específicos
-sudo tail -50 /var/log/apache2/error.log
+# 4. Verificar que funcionan las extensiones
+php -m | grep -E "pdo|mysql|zip|curl"
+
+# 5. Si siguen los errores, ver logs específicos
+sudo tail -50 /var/log/apache2/error.log | grep -i "auth\|php\|fatal"
 ```
 
-### Error 500 - Base de Datos
+### ⚠️ Error 500 - Base de Datos
+Si sale Error 500, puede que la base de datos no existe:
 
 ```bash
 # Verificar MySQL/MariaDB
 sudo systemctl status mariadb
+sudo systemctl status mysql
 
 # Si no está corriendo, iniciar
 sudo systemctl start mariadb
 sudo systemctl enable mariadb
 ```
 
-### Credenciales de la Base de Datos
+```bash
+# Crear base de datos
+sudo mysql -u root -p
+```
 
+```sql
+CREATE DATABASE gym_ma_db CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+EXIT;
+```
+
+```bash
+# Importar tablas (opcional - el instalador lo hace automáticamente)
+sudo mysql -u root -p gym_ma_db < /var/www/html/gym_ma/db/gym_ma_db.sql
+
+# O ejecutar el instalador en el navegador:
+# http://tu-servidor/instalar.php
+```
+
+### 📌 Credenciales de la Base de Datos
 El archivo `config/Database.php` usa:
 - Usuario: `root`
 - Contraseña: (vacía)
 - Base de datos: `gym_ma_db`
 
+Si necesitas un usuario específico:
+
+```bash
+sudo mysql -u root -p
+```
+
+```sql
+CREATE USER 'gymuser'@'localhost' IDENTIFIED BY 'gymuser';
+GRANT ALL PRIVILEGES ON gym_ma_db.* TO 'gymuser'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+Luego edita `config/Database.php`:
+
+```php
+private $username = "gymuser";
+private $password = "gymuser";
+```
+
 ---
 
-## 📄 Licencia
+### 📌 Ver logs de errores específicos
 
-Este proyecto está bajo la Licencia MIT.
+```bash
+sudo tail -100 /var/log/apache2/error.log | grep -i error
+```
 
-Copyright (c) 2026 GYM MA DB
+### 📌 Habilitar mostrar errores temporalmente
 
-Se concede permiso por la presente, de forma gratuita, a cualquier persona que obtenga una copia de este software y de los archivos de documentación asociados, para utilizar el software sin restricción.
+```bash
+sudo nano /etc/php/8.1/apache2/php.ini
+```
+
+Cambiar: `display_errors = Off`
+Por: `display_errors = On`
+
+```bash
+# Reiniciar Apache
+sudo systemctl restart apache2
+
+# Ver logs ahora
+sudo tail -f /var/log/apache2/error.log
+```
+
+### 📌 Permisos correctos
+
+```bash
+sudo chown -R www-data:www-data /var/www/html/gym_ma
+sudo find /var/www/html/gym_ma -type f -exec chmod 644 {} \;
+sudo find /var/www/html/gym_ma -type d -exec chmod 755 {} \;
+```
 
 ---
 
-## ✉️ Soporte y Respaldo
+## 🌐 Linux (Debian/Ubuntu) con LEMP
 
-- **Backups**: Utiliza la opción "Respaldar Base de Datos" regularmente
-- **Soporte**: Contacta al administrador del sistema
+```bash
+# Instalar LEMP
+sudo apt install nginx mariadb-server php-fpm php-mysql -y
 
----
+# Configurar Nginx
+sudo nano /etc/nginx/sites-available/gym_ma
+```
+
+```nginx
+server {
+    listen 80;
+    server_name gym_ma.local;
+    root /var/www/html/gym_ma;
+    index index.php index.html;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_pass unix:/run/php/php-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}
+```
+
+```bash
+# Habilitar sitio
+sudo ln -s /etc/nginx/sites-available/gym_ma /etc/nginx/sites-enabled/
+sudo systemctl reload nginx
+```
+
 
 <img width="626" height="736" alt="image" src="https://github.com/user-attachments/assets/b6b9f961-bad5-4a08-a881-5059c17974bc" />
 
