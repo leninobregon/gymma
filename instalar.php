@@ -46,22 +46,28 @@ try {
       `direccion_gym` text DEFAULT NULL,
       `telefono_gym` varchar(20) DEFAULT NULL,
       `logo_ruta` varchar(255) DEFAULT 'logo_default.png',
-      `tema` varchar(20) DEFAULT 'default'
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+      `tema` varchar(20) DEFAULT 'default',
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
     CREATE TABLE `usuarios` (
       `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
       `nombre` varchar(50) NOT NULL,
       `apellido` varchar(50) NOT NULL,
-      `usuario` varchar(50) NOT NULL UNIQUE,
-      `cedula` varchar(20) NOT NULL UNIQUE,
+      `usuario` varchar(50) NOT NULL,
+      `cedula` varchar(20) NOT NULL,
       `password` varchar(255) NOT NULL,
-      `two_factor_pin` varchar(10) DEFAULT NULL,
+      `two_factor_secret` varchar(255) DEFAULT NULL,
       `two_factor_enabled` tinyint(1) DEFAULT 0,
+      `two_factor_code` varchar(10) DEFAULT NULL,
+      `two_factor_expires` datetime DEFAULT NULL,
       `telefono` varchar(20) DEFAULT NULL,
       `rol` enum('ADMIN','CAJA') NOT NULL DEFAULT 'CAJA',
-      `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp()
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+      `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp(),
+      `two_factor_pin` varchar(10) DEFAULT NULL,
+      UNIQUE KEY `cedula` (`cedula`),
+      UNIQUE KEY `usuario` (`usuario`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
     CREATE TABLE `planes` (
       `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -69,7 +75,7 @@ try {
       `duracion_dias` int(11) NOT NULL,
       `precio` decimal(10,2) NOT NULL,
       `estado` enum('ACTIVO','INACTIVO') DEFAULT 'ACTIVO'
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
     CREATE TABLE `socios` (
       `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -86,8 +92,11 @@ try {
       `fecha_vencimiento` date DEFAULT NULL,
       `fecha_renovacion` date DEFAULT NULL,
       `id_plan` int(11) DEFAULT NULL,
-      KEY `fk_socio_plan` (`id_plan`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+      KEY `fk_socio_plan` (`id_plan`),
+      KEY `fk_socio_plan_gym` (`id_plan`),
+      CONSTRAINT `fk_socio_plan` FOREIGN KEY (`id_plan`) REFERENCES `planes` (`id`) ON DELETE SET NULL,
+      CONSTRAINT `fk_socio_plan_gym` FOREIGN KEY (`id_plan`) REFERENCES `planes` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
     CREATE TABLE `cajas` (
       `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -102,7 +111,7 @@ try {
       `estado` enum('ABIERTA','CERRADA') DEFAULT 'ABIERTA',
       `tasa_apertura` decimal(10,4) DEFAULT 36.6243,
       `nota` text DEFAULT NULL
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
     CREATE TABLE `ventas` (
       `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -120,14 +129,14 @@ try {
       `metodo_pago` enum('EFECTIVO','TRANSFERENCIA') DEFAULT 'EFECTIVO',
       `fecha_venta` timestamp NOT NULL DEFAULT current_timestamp(),
       `estado` varchar(20) DEFAULT 'COMPLETADO'
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
     CREATE TABLE `inventario` (
       `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
       `descripcion` varchar(150) NOT NULL,
       `precio` decimal(10,2) NOT NULL,
       `cantidad` int(11) NOT NULL DEFAULT 0
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
     CREATE TABLE `caja_egresos` (
       `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -136,7 +145,7 @@ try {
       `fecha_egreso` datetime DEFAULT current_timestamp(),
       `id_usuario` int(11) NOT NULL,
       `categoria` varchar(50) DEFAULT 'GENERAL'
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     ";
 
     $pdo->exec($sql);
@@ -147,9 +156,9 @@ try {
 
     $hash = password_hash($admin_pass, PASSWORD_BCRYPT);
     $pdo->exec("INSERT INTO usuarios (nombre, apellido, usuario, cedula, password, telefono, rol) 
-                VALUES ('Admin', 'General', '$admin_user', '001-000000-0000A', '$hash', '88888888', 'ADMIN')");
+                VALUES ('Administrador', 'General', '$admin_user', '001-000000-0000A', '$hash', '88888888', 'ADMIN')");
 
-    $pdo->exec("INSERT INTO planes (nombre_plan, duracion_dias, precio, estado) VALUES ('Mensualidad', 30, 300.00, 'ACTIVO')");
+    $pdo->exec("INSERT INTO planes (nombre_plan, duracion_dias, precio, estado) VALUES ('Mensualidad Pesas', 30, 300.00, 'ACTIVO')");
 
     echo "<p style='color:#4ecca3;'>✅ Datos iniciales insertados.</p>";
 
@@ -174,14 +183,14 @@ class Database {
     }
 }
 ?>';
-    file_put_contents("Database.php", $db_class);
+    file_put_contents("config/Database.php", $db_class);
     echo "<p style='color:#4ecca3;'>✅ Archivo Database.php actualizado.</p>";
 
     echo "<div style='background:#0f3460; padding:20px; margin-top:20px; border-radius:10px; text-align:center;'>";
     echo "<h3 style='color:#4ecca3;'>🎉 ¡INSTALACIÓN COMPLETA!</h3>";
     echo "<p>Usuario: <b style='color:#e94560;'>$admin_user</b></p>";
     echo "<p>Contraseña: <b style='color:#e94560;'>$admin_pass</b></p>";
-    echo "<br><a href='views/login.php' style='color:#fff; background:#e94560; padding:12px 25px; text-decoration:none; border-radius:5px; display:inline-block; font-weight:bold;'>IR AL SISTEMA</a>";
+    echo "<br><a href='login.php' style='color:#fff; background:#e94560; padding:12px 25px; text-decoration:none; border-radius:5px; display:inline-block; font-weight:bold;'>IR AL SISTEMA</a>";
     echo "</div>";
 
 } catch (PDOException $e) {
