@@ -15,24 +15,63 @@ $admin_pass = "admin123";
 $user_db = "root";
 $pass_db = "";
 
+$db_user = "gymuser";
+$db_pass = "gymuser";
+
 echo "<html><head><meta charset='UTF-8'><title>Instalador - GYM MA DB</title></head>";
 echo "<body style='font-family:Arial; background:#1a1a2e; padding:30px; color:#eee;'>";
 echo "<div style='max-width:700px; margin:auto; background:#16213e; padding:25px; border-radius:15px; box-shadow:0 8px 32px rgba(0,0,0,0.3);'>";
 echo "<h2 style='color:#e94560; text-align:center;'>🏋️ INSTALADOR - GYM MA DB</h2><hr style='border-color:#0f3460;'>";
 
+$pdo = null;
+$connection_methods = [
+    ["mysql:host=localhost", "root", ""],
+    ["mysql:host=localhost", "root", "root"],
+    ["mysql:host=localhost;unix_socket=/var/run/mysqld/mysqld.sock", "root", ""],
+    ["mysql:host=localhost;unix_socket=/var/run/mysqld/mysqld.sock", "root", "root"],
+];
+
+foreach ($connection_methods as $method) {
+    try {
+        $pdo = new PDO($method[0], $method[1], $method[2]);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        break;
+    } catch (PDOException $e) {
+        continue;
+    }
+}
+
+if ($pdo == null) {
+    echo "<div style='color:#e94560; padding:15px; background:#2d132c; border-radius:8px;'>";
+    echo "<b>❌ ERROR:</b> No se pudo conectar a MySQL/MariaDB";
+    echo "<p style='margin-top:10px; font-size:14px;'>En Linux (Debian), ejecuta:</p>";
+    echo "<code style='background:#1a1a2e; padding:5px 10px; display:block;'>sudo mysql -u root -e \"ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY ''; FLUSH PRIVILEGES;\"</code>";
+    echo "</div>";
+    echo "</div></body></html>";
+    exit;
+}
+
 try {
     try {
-        $pdo = new PDO("mysql:host=$host", $user_db, $pass_db);
-    } catch (PDOException $e) {
-        $pass_db = "root";
-        $pdo = new PDO("mysql:host=$host", $user_db, $pass_db);
-    }
-    
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo->exec("ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY ''");
+        $pdo->exec("FLUSH PRIVILEGES");
+    } catch (PDOException $e) {}
     
     $pdo->exec("CREATE DATABASE IF NOT EXISTS `$db_name` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;");
     $pdo->exec("USE `$db_name`;");
+    
+    try {
+        $pdo->exec("CREATE USER IF NOT EXISTS '$db_user'@'localhost' IDENTIFIED BY '$db_pass';");
+        $pdo->exec("GRANT ALL PRIVILEGES ON $db_name.* TO '$db_user'@'localhost';");
+        $pdo->exec("FLUSH PRIVILEGES;");
+    } catch (PDOException $e) {
+        $pdo->exec("ALTER USER '$db_user'@'localhost' IDENTIFIED BY '$db_pass';");
+        $pdo->exec("GRANT ALL PRIVILEGES ON $db_name.* TO '$db_user'@'localhost';");
+        $pdo->exec("FLUSH PRIVILEGES;");
+    }
+    
     echo "<p style='color:#4ecca3;'>✅ Base de datos <b>$db_name</b> creada.</p>";
+    echo "<p style='color:#4ecca3;'>✅ Usuario <b>$db_user</b> creado con permisos.</p>";
 
     $sql = "
     CREATE TABLE `configuracion` (
@@ -166,8 +205,8 @@ try {
 class Database {
     private $host = "localhost";
     private $db_name = "gym_ma_db";
-    private $username = "root";
-    private $password = "";
+    private $username = "gymuser";
+    private $password = "gymuser";
     public $conn;
 
     public function getConnection() {
@@ -190,7 +229,7 @@ class Database {
     echo "<h3 style='color:#4ecca3;'>🎉 ¡INSTALACIÓN COMPLETA!</h3>";
     echo "<p>Usuario: <b style='color:#e94560;'>$admin_user</b></p>";
     echo "<p>Contraseña: <b style='color:#e94560;'>$admin_pass</b></p>";
-    echo "<br><a href='login.php' style='color:#fff; background:#e94560; padding:12px 25px; text-decoration:none; border-radius:5px; display:inline-block; font-weight:bold;'>IR AL SISTEMA</a>";
+    echo "<br><a href='views/login.php' style='color:#fff; background:#e94560; padding:12px 25px; text-decoration:none; border-radius:5px; display:inline-block; font-weight:bold;'>IR AL SISTEMA</a>";
     echo "</div>";
 
 } catch (PDOException $e) {
