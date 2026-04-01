@@ -142,7 +142,11 @@ sudo apt install apache2 mariadb-server php php-mysql php-cli php-zip php-curl p
 
 # Habilitar servicios
 sudo systemctl enable apache2 mariadb
-sudo systemctl start apache2 mariadb
+sudo systemctl start mariadb
+
+# IMPORTANTE: Configurar acceso root para PHP
+sudo mysql -u root -p -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password; FLUSH PRIVILEGES;"
+(presiona Enter cuando pida contraseña)
 ```
 
 ```bash
@@ -434,6 +438,7 @@ server {
 sudo ln -s /etc/nginx/sites-available/gym_ma /etc/nginx/sites-enabled/
 sudo systemctl reload nginx
 ```
+
 
 
 <img width="626" height="736" alt="image" src="https://github.com/user-attachments/assets/b6b9f961-bad5-4a08-a881-5059c17974bc" />
